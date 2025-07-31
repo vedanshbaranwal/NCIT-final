@@ -41,22 +41,25 @@ export default function Register() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterForm) => {
-      return await apiRequest("/api/auth/register", {
+      const response = await apiRequest("/api/auth/register", {
         method: "POST",
         body: JSON.stringify(data),
       });
+      return await response.json();
     },
     onSuccess: (data) => {
       toast({
-        title: "Success",
-        description: "Account created successfully! Please log in.",
+        title: "Account Created!",
+        description: `Welcome ${data.fullName}! You're now registered.`,
       });
-      setLocation("/login");
+      // Auto-login after successful registration
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setLocation("/");
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
-        description: error.message || "Failed to create account",
+        title: "Registration Failed",
+        description: error.message || "Please check your information and try again",
         variant: "destructive",
       });
     },

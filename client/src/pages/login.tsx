@@ -33,23 +33,24 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
-      return await apiRequest("/api/auth/login", {
+      const response = await apiRequest("/api/auth/login", {
         method: "POST",
         body: JSON.stringify(data),
       });
+      return await response.json();
     },
     onSuccess: (data) => {
       toast({
-        title: "Success",
-        description: "Logged in successfully!",
+        title: "Welcome Back!",
+        description: `Successfully logged in as ${data.fullName}`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       setLocation("/");
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
-        description: error.message || "Failed to login",
+        title: "Login Failed",
+        description: error.message || "Please check your email and password",
         variant: "destructive",
       });
     },
