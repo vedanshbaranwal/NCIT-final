@@ -117,6 +117,17 @@ export class CSVStorage {
     return categories.filter(cat => cat.isActive);
   }
 
+  async getLocations(): Promise<Location[]> {
+    const headers = ['id', 'name', 'nameNepali', 'type', 'parentId', 'isServiceable', 'createdAt', 'updatedAt'];
+    const data = await this.readCsv<any>('locations.csv', headers);
+    return data.map(item => ({
+      ...item,
+      isServiceable: item.isServiceable === 'true',
+      createdAt: new Date(item.createdAt || Date.now()),
+      updatedAt: new Date(item.updatedAt || Date.now())
+    }));
+  }
+
   async upsertServiceCategory(category: UpsertServiceCategory): Promise<ServiceCategory> {
     const categories = await this.getServiceCategories();
     const existing = categories.find(c => c.id === category.id);
