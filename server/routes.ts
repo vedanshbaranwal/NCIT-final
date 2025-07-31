@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { ZapierIntegration } from "./zapier";
 import { 
   insertUserSchema, 
   insertProfessionalSchema, 
@@ -32,6 +33,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Store user session
       (req.session as any).userId = user.id;
+      
+      // Notify Zapier about new user registration
+      ZapierIntegration.notifyNewUserRegistration(user.id);
       
       // Don't return password in response
       const { password, ...userWithoutPassword } = user;
@@ -220,6 +224,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertBookingSchema.parse(bookingData);
       const booking = await storage.createBooking(validatedData);
       
+      // Notify Zapier about new booking
+      ZapierIntegration.notifyNewBooking(booking.id);
+      
       // Auto-assign professional based on service and location
       const professionals = await storage.getProfessionalsByService(validatedData.serviceId);
       const localProfessionals = professionals.filter(prof => 
@@ -232,7 +239,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Simple assignment to first available professional
         // In production, this would be more sophisticated with matching algorithms
         const assignedProfessional = localProfessionals[0];
-        await storage.updateBookingStatus(booking.id, "assigned");
+        const updatedBooking = await storage.updateBookingStatus(booking.id, "assigned");
+        
+        // Notify Zapier about professional assignment
+        ZapierIntegration.notifyProfessionalAssignment(booking.id, assignedProfessional.id);
+        ZapierIntegration.notifyBookingStatusUpdate(booking.id, "pending", "assigned");
       }
       
       res.status(201).json(booking);
@@ -244,11 +255,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/bookings/:id/status", async (req, res) => {
     try {
       const { status } = req.body;
+      const oldBooking = await storage.getBooking(req.params.id);
+      const oldStatus = oldBooking?.status || "unknown";
+      
       const booking = await storage.updateBookingStatus(req.params.id, status);
       
       if (!booking) {
         return res.status(404).json({ message: "Booking not found" });
       }
+      
+      // Notify Zapier about status update
+      ZapierIntegration.notifyBookingStatusUpdate(booking.id, oldStatus, status);
       
       res.json(booking);
     } catch (error) {
@@ -368,6 +385,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  // Zapier integration endpoints
+  app.get("/api/zapier/bookings", async (req, res) => {
+    try {
+      const bookingsData = await ZapierIntegration.getBookingsForExport();
+      res.json(bookingsData);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to export bookings data" });
+    }
+  });
+
+  app.post("/api/zapier/test-webhook", async (req, res) => {
+    try {
+      const { type, data } = req.body;
+      
+      // Test webhook functionality
+      switch (type) {
+        case "new_booking":
+          await ZapierIntegration.notifyNewBooking(data.bookingId);
+          break;
+        case "status_update":
+          await ZapierIntegration.notifyBookingStatusUpdate(data.bookingId, data.oldStatus, data.newStatus);
+          break;
+        case "new_user":
+          await ZapierIntegration.notifyNewUserRegistration(data.userId);
+          break;
+        case "professional_assignment":
+          await ZapierIntegration.notifyProfessionalAssignment(data.bookingId, data.professionalId);
+          break;
+        default:
+          return res.status(400).json({ message: "Invalid webhook type" });
+      }
+      
+      res.json({ message: "Webhook test sent successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to send test webhook" });
     }
   });
 

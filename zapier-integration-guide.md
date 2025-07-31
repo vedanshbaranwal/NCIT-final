@@ -1,252 +1,189 @@
-# जरूरी छ - Complete Zapier Integration Guide
+# Complete Zapier Integration Guide for जरूरी छ
 
-## 🎯 Your Google Sheets is Ready!
+## Quick Setup Overview
 
-### Spreadsheet Details:
-- **URL**: https://docs.google.com/spreadsheets/d/1CuqYP9kyYUSszYVN3_ZJAjHV6rHnnONO_wJjBqPUzew
-- **Service Account**: jaruri@jaruri.iam.gserviceaccount.com
+Your service platform now has built-in Zapier integration! Here's what happens automatically:
 
-### Required Sheets (create these tabs):
-1. **Categories** - Service types (Electrician, Plumber, etc.)
-2. **Services** - Individual services with pricing  
-3. **Locations** - Service areas (Kathmandu, Pokhara, etc.)
-4. **Users** - Customer accounts
-5. **Bookings** - Service appointments ← **Main trigger for Zapier**
-6. **Professionals** - Worker profiles
+✅ **New bookings** → Sends data to Zapier → Can update Google Sheets, send SMS, etc.
+✅ **User registrations** → Triggers notifications 
+✅ **Booking status changes** → Sends updates to professionals
+✅ **Professional assignments** → Notifies both customer and professional
 
----
+## Step-by-Step Setup
 
-## 📋 Step-by-Step Setup
+### 1. Create Your Zapier Account
+- Go to [zapier.com](https://zapier.com) 
+- Sign up (free plan works fine to start)
 
-### Step 1: Import CSV Data
-From the `google-sheets-setup` folder, import these files:
+### 2. Create Your First Zap - New Bookings to Google Sheets
 
-```
-Categories Sheet    ← categories-for-sheets.csv (8 categories)
-Services Sheet      ← services-for-sheets.csv (8 services)  
-Locations Sheet     ← locations-for-sheets.csv (5 cities)
-Users Sheet         ← users-template.csv (headers only)
-Bookings Sheet      ← bookings-template.csv (headers only)
-Professionals Sheet ← professionals-template.csv (headers only)
-```
+#### Step A: Set up the Trigger
+1. Click "Create Zap"
+2. Choose **"Webhooks by Zapier"** as trigger
+3. Select **"Catch Hook"**
+4. Copy the webhook URL (looks like: `https://hooks.zapier.com/hooks/catch/XXXXX/YYYYY`)
 
-### Step 2: Share Spreadsheet
-Share with: **jaruri@jaruri.iam.gserviceaccount.com**
-Permission: **Editor**
+#### Step B: Add the webhook URL to your Replit
+1. Go to your Replit project
+2. Click the lock icon (Secrets) 
+3. Add new secret:
+   - Name: `ZAPIER_NEW_BOOKING_WEBHOOK`
+   - Value: (paste the webhook URL from Step A)
 
----
+#### Step C: Test the connection
+1. Make a test booking on your website
+2. Check if Zapier received the data
+3. You should see booking details like customer name, service, location, etc.
 
-## 🤖 Zapier Automation Workflows
+#### Step D: Connect to Google Sheets
+1. Add action: **"Google Sheets"** → **"Create Spreadsheet Row"**
+2. Create a new Google Sheet with these columns:
+   - booking_id
+   - customer_name
+   - customer_phone
+   - service_name
+   - location
+   - scheduled_date
+   - estimated_price
+   - status
+3. Map the webhook data to your sheet columns
+4. Turn on your Zap!
 
-### Workflow 1: New Booking → Notify Professional
+### 3. Set up SMS Notifications for Professionals
 
-**Trigger:** Google Sheets - New Spreadsheet Row
-- **Spreadsheet**: Your जरूरी छ spreadsheet
-- **Worksheet**: Bookings
+#### Create a second Zap:
+1. **Trigger**: Webhooks by Zapier → Catch Hook
+2. Add webhook URL as: `ZAPIER_PROFESSIONAL_ASSIGNMENT_WEBHOOK`
+3. **Action**: SMS by Zapier (or Twilio)
+4. **Message**: "New job! Customer: {{customer_name}}, Service: {{service_name}}, Location: {{location}}"
 
-**Action 1:** WhatsApp Business (or SMS via Twilio)
-- **To**: Professional's phone number
-- **Message**:
-```
-🔧 New जरूरी छ Job Available!
+### 4. Environment Variables Needed
 
-Service: {{Service Name}}
-Location: {{Address}}
-Date: {{Scheduled Date}} 
-Customer Phone: {{Customer Phone}}
-Estimated Price: Rs. {{Estimated Price}}
-
-Reply YES to accept this job.
-Details: {{Description}}
-```
-
-### Workflow 2: User Registration → Welcome Message
-
-**Trigger:** Google Sheets - New Spreadsheet Row
-- **Worksheet**: Users
-
-**Action:** SMS/Email
-- **Message**: "Welcome to जरूरी छ! Book home services easily. Need help? Call 01-1234567"
-
-### Workflow 3: Booking Status Change → Customer Update
-
-**Trigger:** Google Sheets - Updated Spreadsheet Row  
-- **Worksheet**: Bookings
-- **Trigger Column**: status
-
-**Action:** SMS to Customer
-- **When status = "confirmed"**: "✅ Your booking is confirmed! Professional will arrive on {{date}}"
-- **When status = "completed"**: "🎉 Service completed! Please rate your experience."
-- **When status = "cancelled"**: "❌ Booking cancelled. Full refund processed."
-
----
-
-## 📊 Data Flow Architecture
+Add these to your Replit Secrets:
 
 ```
-जरूरी छ Website → CSV Files → Google Sheets → Zapier → WhatsApp/SMS
+ZAPIER_NEW_BOOKING_WEBHOOK=https://hooks.zapier.com/hooks/catch/XXXXX/YYYYY
+ZAPIER_BOOKING_STATUS_WEBHOOK=https://hooks.zapier.com/hooks/catch/XXXXX/YYYYY  
+ZAPIER_NEW_USER_WEBHOOK=https://hooks.zapier.com/hooks/catch/XXXXX/YYYYY
+ZAPIER_PROFESSIONAL_ASSIGNMENT_WEBHOOK=https://hooks.zapier.com/hooks/catch/XXXXX/YYYYY
 ```
 
-### Real-time Process:
-1. **Customer books service** → New row added to Bookings sheet
-2. **Zapier detects change** → Looks up service details  
-3. **Finds matching professional** → Based on serviceId + location
-4. **Sends WhatsApp notification** → Professional gets job offer
-5. **Professional responds** → Booking status updated
-6. **Customer notified** → Automatic confirmation message
+## What Data Gets Sent to Zapier
 
----
-
-## 🔍 Professional Matching Logic
-
-### In Zapier Formatter/Lookup:
-
-1. **Get Service Details:**
-   - Use `serviceId` from Bookings row
-   - Lookup in Services sheet → get `categoryId` 
-   - Lookup in Categories sheet → get category name
-
-2. **Find Available Professionals:**
-   - Filter Professionals sheet by:
-     - `skills` contains category name (e.g., "Electrician")
-     - `availability` = "available"
-     - `serviceAreas` contains booking location
-
-3. **Send Notification:**
-   - Get professional's phone from Users sheet (userId lookup)
-   - Send personalized WhatsApp message
-
-### Example Matching:
-```
-Booking: serviceId="1", location="Kathmandu"
-↓
-Service: id="1", categoryId="1", name="Electrical Repairs"  
-↓
-Category: id="1", name="Electrician"
-↓  
-Find Professionals: skills contains "Electrician" AND serviceAreas contains "Kathmandu"
-↓
-Send to: Professional's WhatsApp number
+### New Booking Data:
+```json
+{
+  "booking_id": "abc-123",
+  "customer_name": "Ram Sharma", 
+  "customer_phone": "9841234567",
+  "service_name": "Electrical Wiring",
+  "service_name_nepali": "बिजुली तार",
+  "location": "Kathmandu",
+  "address": "Thamel, Kathmandu",
+  "scheduled_date": "2025-08-01T10:00:00.000Z",
+  "estimated_price": "800.00",
+  "payment_method": "cash",
+  "status": "pending"
+}
 ```
 
----
-
-## 📱 WhatsApp Message Templates
-
-### New Job Notification:
-```
-🔧 जरूरी छ - New Job Alert!
-
-Service: Electrical Repairs
-Location: Thamel, Kathmandu  
-Date: Tomorrow 2:00 PM
-Customer: 9841234567
-Price: Rs. 500
-
-Accept? Reply:
-✅ YES - I'll take this job
-❌ NO - Not available
-
-Job ID: #B001
+### Professional Assignment Data:
+```json
+{
+  "booking_id": "abc-123",
+  "professional_name": "Ram Bahadur Thapa",
+  "professional_phone": "9841234567", 
+  "customer_name": "Sita Sharma",
+  "service_name": "Electrical Wiring",
+  "location": "Kathmandu",
+  "scheduled_date": "2025-08-01T10:00:00.000Z"
+}
 ```
 
-### Customer Confirmation:
-```
-✅ Booking Confirmed - जरूरी छ
+## Popular Automation Ideas
 
-Your electrician will arrive:
-📅 Date: Jan 15, 2025 
-⏰ Time: 2:00 PM
-📍 Location: Your address
-💰 Price: Rs. 500
+### 1. **Customer Confirmations**
+- **Trigger**: New booking
+- **Action**: Send email confirmation to customer
 
-Professional: Ram Sharma
-📞 Contact: 9841234568
+### 2. **Professional Notifications** 
+- **Trigger**: Professional assignment
+- **Action**: Send SMS/WhatsApp to professional
 
-Need changes? Reply RESCHEDULE
-```
+### 3. **Google Sheets Dashboard**
+- **Trigger**: Any booking event
+- **Action**: Update master spreadsheet for analytics
 
-### Job Completion:
-```
-🎉 Service Completed - जरूरी छ
+### 4. **Payment Reminders**
+- **Trigger**: Booking status = completed
+- **Action**: Send payment reminder after 24 hours
 
-Thank you for using our service!
+### 5. **Customer Follow-up**
+- **Trigger**: Booking completed
+- **Action**: Send review request email after 2 days
 
-Rate your experience:
-⭐ Reply: RATE 5 (Excellent)
-⭐ Reply: RATE 4 (Good)  
-⭐ Reply: RATE 3 (Average)
+## Testing Your Setup
 
-💳 Payment: Rs. 500 (Cash on Delivery)
-🧾 Invoice sent to your email
-```
+### Test API Endpoints:
+```bash
+# Get all bookings data (for Google Sheets export)
+GET https://your-replit-url.replit.app/api/zapier/bookings
 
----
-
-## 🛠️ Advanced Zapier Features
-
-### Multi-Step Zaps:
-
-**Zap 1: Smart Professional Selection**
-1. New booking trigger
-2. Lookup service details  
-3. Filter professionals by skills + location
-4. Send to 3 professionals simultaneously
-5. First to reply "YES" gets the job
-
-**Zap 2: Customer Journey**
-1. User registration → Welcome SMS
-2. First booking → Tutorial tips
-3. Booking confirmed → Instructions SMS  
-4. Service completed → Review request
-5. Repeat customer → Loyalty discount
-
-**Zap 3: Business Intelligence**
-1. Daily booking summary → Email to admin
-2. Popular services → Inventory alerts
-3. Customer feedback → Service improvements
-4. Professional ratings → Quality monitoring
-
----
-
-## 📈 Analytics & Reporting
-
-### Google Sheets Formulas:
-```
-Total Bookings Today: =COUNTIF(Bookings!R:R, TODAY())
-Revenue This Month: =SUMIF(Bookings!S:S, ">="&EOMONTH(TODAY(),-1)+1, Bookings!I:I)
-Top Service: =INDEX(Services!C:C, MATCH(MAX(COUNTIF(Bookings!D:D, Services!A:A)), COUNTIF(Bookings!D:D, Services!A:A), 0))
+# Test webhook manually
+POST https://your-replit-url.replit.app/api/zapier/test-webhook
+{
+  "type": "new_booking",
+  "data": { "bookingId": "test-booking-id" }
+}
 ```
 
-### Zapier Analytics Zaps:
-- **Daily Reports**: Email summary of bookings, revenue, new users
-- **Performance Alerts**: Notify when booking response time > 1 hour
-- **Growth Tracking**: Weekly customer acquisition reports
+### Manual Testing:
+1. Create a booking on your website
+2. Check Zapier dashboard for webhook data
+3. Verify Google Sheets gets updated
+4. Test SMS notifications
 
----
+## Troubleshooting
 
-## 🚨 Error Handling & Monitoring
+**Webhooks not working?**
+- Check if environment variables are set correctly
+- Make sure webhook URLs are valid
+- Test with a simple booking first
 
-### Zapier Error Notifications:
-1. **Failed SMS**: Retry with email backup
-2. **Invalid Phone**: Log error + manual follow-up  
-3. **No Available Professional**: Auto-expand search radius
-4. **Booking Conflicts**: Alert admin immediately
+**Google Sheets not updating?**
+- Verify column names match exactly
+- Check Google Sheets permissions
+- Make sure Zap is turned ON
 
-### Monitoring Zaps:
-- **Health Check**: Daily test booking to verify system
-- **Response Time**: Alert if professionals don't respond within 30 min
-- **Customer Satisfaction**: Auto-escalate low ratings
+**SMS not sending?**
+- Check phone number format (+977XXXXXXXXX)
+- Verify SMS service is connected to Zapier
+- Test with your own number first
 
----
+## Alternative: Make.com Integration
 
-## 🎯 Success Metrics
+If you prefer Make.com instead of Zapier:
 
-Track these KPIs through Zapier + Google Sheets:
-- **Booking Conversion**: Leads → Confirmed bookings
-- **Professional Response Time**: Job offer → Acceptance  
-- **Customer Satisfaction**: Average rating per service
-- **Revenue per User**: Total customer lifetime value
-- **Service Coverage**: % of booking requests fulfilled
+1. Create webhooks in Make.com
+2. Use the same environment variable names
+3. The data format is identical
+4. Works exactly the same way
 
-This complete system gives you a fully automated service marketplace with real-time notifications!
+## Advanced Features
+
+### WhatsApp Business Integration
+- Use WhatsApp Business API through Zapier
+- Send rich messages with booking details
+- Include location links and contact info
+
+### Calendar Integration  
+- Auto-add bookings to Google Calendar
+- Send calendar invites to customers
+- Block professional's availability
+
+### Analytics Dashboard
+- Track booking trends over time
+- Monitor most popular services
+- Calculate revenue automatically
+
+Your platform is now ready for full automation! Start with the basic Google Sheets integration and gradually add more automations as needed.
