@@ -7,6 +7,8 @@ import Home from "@/pages/home";
 import Services from "@/pages/services";
 import Booking from "@/pages/booking";
 import WorkerSignup from "@/pages/worker-signup";
+import Login from "@/pages/login";
+import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +18,8 @@ function Router() {
       <Route path="/services" component={Services} />
       <Route path="/booking/:serviceId?" component={Booking} />
       <Route path="/worker-signup" component={WorkerSignup} />
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -137,12 +137,16 @@ export default function Header() {
             
             {/* Auth Buttons */}
             <div className="hidden md:flex items-center space-x-3">
-              <Button variant="ghost" className="text-gray-700 hover:text-[hsl(16,100%,60%)]">
-                Login
-              </Button>
-              <Button className="bg-[hsl(16,100%,60%)] hover:bg-[hsl(16,100%,55%)] text-white mountain-shadow">
-                Sign Up
-              </Button>
+              <Link href="/login">
+                <Button variant="ghost" className="text-gray-700 hover:text-[hsl(16,100%,60%)]">
+                  Login
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button className="bg-[hsl(16,100%,60%)] hover:bg-[hsl(16,100%,55%)] text-white font-medium px-6">
+                  Sign Up
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -177,12 +181,16 @@ export default function Header() {
                   </Link>
                   
                   <div className="pt-4 border-t space-y-3">
-                    <Button className="w-full bg-[hsl(16,100%,60%)] hover:bg-[hsl(16,100%,55%)]">
-                      Sign Up
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      Login
-                    </Button>
+                    <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                      <Button className="w-full bg-[hsl(16,100%,60%)] hover:bg-[hsl(16,100%,55%)]">
+                        Sign Up
+                      </Button>
+                    </Link>
+                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">
+                        Login
+                      </Button>
+                    </Link>
                   </div>
 
                   <div className="pt-4 space-y-2 text-sm text-gray-600">

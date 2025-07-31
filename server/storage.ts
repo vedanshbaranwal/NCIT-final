@@ -13,9 +13,20 @@ import {
   type ContactRequest,
   type InsertContactRequest,
   type AppNotification,
-  type InsertNotification
+  type InsertNotification,
+  users,
+  serviceCategories,
+  services,
+  professionals,
+  bookings,
+  reviews,
+  locations,
+  contactRequests,
+  appNotifications
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -340,4 +351,155 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  // User methods
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  // Service Categories methods
+  async getServiceCategories(): Promise<ServiceCategory[]> {
+    return await db.select().from(serviceCategories);
+  }
+
+  async getActiveServiceCategories(): Promise<ServiceCategory[]> {
+    return await db.select().from(serviceCategories).where(eq(serviceCategories.isActive, true));
+  }
+
+  // Services methods
+  async getServices(): Promise<Service[]> {
+    return await db.select().from(services);
+  }
+
+  async getServicesByCategory(categoryId: string): Promise<Service[]> {
+    return await db.select().from(services).where(eq(services.categoryId, categoryId));
+  }
+
+  async getService(id: string): Promise<Service | undefined> {
+    const [service] = await db.select().from(services).where(eq(services.id, id));
+    return service;
+  }
+
+  // Professional methods
+  async getProfessionals(): Promise<Professional[]> {
+    return await db.select().from(professionals);
+  }
+
+  async getProfessional(id: string): Promise<Professional | undefined> {
+    const [professional] = await db.select().from(professionals).where(eq(professionals.id, id));
+    return professional;
+  }
+
+  async getProfessionalByUserId(userId: string): Promise<Professional | undefined> {
+    const [professional] = await db.select().from(professionals).where(eq(professionals.userId, userId));
+    return professional;
+  }
+
+  async createProfessional(insertProfessional: InsertProfessional): Promise<Professional> {
+    const [professional] = await db.insert(professionals).values(insertProfessional).returning();
+    return professional;
+  }
+
+  async getProfessionalsByService(serviceId: string): Promise<Professional[]> {
+    const service = await this.getService(serviceId);
+    if (!service) return [];
+    
+    return await db.select().from(professionals).where(
+      and(
+        eq(professionals.isVerified, true),
+        eq(professionals.availabilityStatus, "available")
+      )
+    );
+  }
+
+  async getProfessionalsByLocation(location: string): Promise<Professional[]> {
+    return await db.select().from(professionals);
+  }
+
+  // Booking methods
+  async getBookings(): Promise<Booking[]> {
+    return await db.select().from(bookings);
+  }
+
+  async getBooking(id: string): Promise<Booking | undefined> {
+    const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
+    return booking;
+  }
+
+  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    const [booking] = await db.insert(bookings).values(insertBooking).returning();
+    return booking;
+  }
+
+  async updateBookingStatus(id: string, status: string): Promise<Booking | undefined> {
+    const [booking] = await db.update(bookings)
+      .set({ status: status as any, updatedAt: new Date() })
+      .where(eq(bookings.id, id))
+      .returning();
+    return booking;
+  }
+
+  async getBookingsByCustomer(customerId: string): Promise<Booking[]> {
+    return await db.select().from(bookings).where(eq(bookings.customerId, customerId));
+  }
+
+  async getBookingsByProfessional(professionalId: string): Promise<Booking[]> {
+    return await db.select().from(bookings).where(eq(bookings.professionalId, professionalId));
+  }
+
+  // Review methods
+  async getReviews(): Promise<Review[]> {
+    return await db.select().from(reviews);
+  }
+
+  async getReviewsByProfessional(professionalId: string): Promise<Review[]> {
+    return await db.select().from(reviews).where(eq(reviews.professionalId, professionalId));
+  }
+
+  async createReview(insertReview: InsertReview): Promise<Review> {
+    const [review] = await db.insert(reviews).values(insertReview).returning();
+    return review;
+  }
+
+  // Location methods
+  async getLocations(): Promise<Location[]> {
+    return await db.select().from(locations);
+  }
+
+  async getServiceableLocations(): Promise<Location[]> {
+    return await db.select().from(locations).where(eq(locations.isServiceable, true));
+  }
+
+  // Contact methods
+  async createContactRequest(insertRequest: InsertContactRequest): Promise<ContactRequest> {
+    const [request] = await db.insert(contactRequests).values(insertRequest).returning();
+    return request;
+  }
+
+  // Notification methods
+  async createNotificationSubscription(insertNotification: InsertNotification): Promise<AppNotification> {
+    const [notification] = await db.insert(appNotifications).values(insertNotification).returning();
+    return notification;
+  }
+}
+
+// Use memory storage as fallback if database connection fails
+export const storage = process.env.NODE_ENV === "development" 
+  ? new MemStorage() 
+  : new DatabaseStorage();

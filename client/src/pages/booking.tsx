@@ -89,27 +89,23 @@ export default function Booking() {
 
   const bookingMutation = useMutation({
     mutationFn: async (data: ExtendedBookingFormData) => {
-      const { customerId, ...bookingData } = data;
-      // For demo purposes, we'll use a mock customer ID
-      // In a real app, this would come from authentication
-      const bookingWithCustomer = {
-        ...bookingData,
-        customerId: "demo-customer-id",
-      };
-      return apiRequest("POST", "/api/bookings", bookingWithCustomer);
+      return await apiRequest("/api/bookings", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
     },
-    onSuccess: () => {
+    onSuccess: (booking) => {
       toast({
         title: "Booking Successful!",
-        description: "Your service has been booked. You'll receive a confirmation shortly.",
+        description: `Your service has been booked! Booking ID: ${booking.id}`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
       setLocation("/");
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Booking Failed",
-        description: "Please check your details and try again.",
+        description: error.message || "Please check your details and try again.",
         variant: "destructive",
       });
     },

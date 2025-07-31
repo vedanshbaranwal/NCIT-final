@@ -12,6 +12,84 @@ import {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Authentication Routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const validatedData = insertUserSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(validatedData.email);
+      if (existingUser) {
+        return res.status(409).json({ message: "User with this email already exists" });
+      }
+      
+      const existingUsername = await storage.getUserByUsername(validatedData.username);
+      if (existingUsername) {
+        return res.status(409).json({ message: "Username already taken" });
+      }
+      
+      const user = await storage.createUser(validatedData);
+      
+      // Store user session
+      (req.session as any).userId = user.id;
+      
+      // Don't return password in response
+      const { password, ...userWithoutPassword } = user;
+      res.status(201).json(userWithoutPassword);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid user data", error: error });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user || user.password !== password) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      
+      // Store user session
+      (req.session as any).userId = user.id;
+      
+      // Don't return password in response
+      const { password: _, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Could not log out" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Don't return password
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   // Service Categories Routes
   app.get("/api/categories", async (req, res) => {
     try {
@@ -100,12 +178,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/bookings", async (req, res) => {
     try {
       const validatedData = insertBookingSchema.parse(req.body);
+      
+      // If no customerId provided, create a guest booking
+      if (!validatedData.customerId) {
+        // Create a guest user
+        const guestUser = await storage.createUser({
+          username: `guest_${Date.now()}`,
+          email: `guest_${Date.now()}@temp.com`,
+          password: "temp_password",
+          fullName: validatedData.address.split(',')[0] || "Guest User",
+          role: "customer"
+        });
+        validatedData.customerId = guestUser.id;
+      }
+      
       const booking = await storage.createBooking(validatedData);
       
       // Auto-assign professional based on service and location
       const professionals = await storage.getProfessionalsByService(validatedData.serviceId);
       const localProfessionals = professionals.filter(prof => 
-        prof.serviceAreas.some(area => 
+        prof.serviceAreas && prof.serviceAreas.some(area => 
           validatedData.location.toLowerCase().includes(area.toLowerCase())
         )
       );
