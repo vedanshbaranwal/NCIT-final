@@ -209,7 +209,7 @@ export class MemStorage implements IStorage {
       rating: "0.00",
       totalJobs: 0,
       availabilityStatus: insertProfessional.availabilityStatus || "available",
-      documents: insertProfessional.documents || null,
+      documents: insertProfessional.documents as { type: string; url: string; verified: boolean }[] | null,
       createdAt: now 
     };
     this.professionals.set(id, professional);
@@ -253,6 +253,7 @@ export class MemStorage implements IStorage {
       paymentStatus: "pending",
       customerNotes: insertBooking.customerNotes || null,
       professionalNotes: insertBooking.professionalNotes || null,
+      coordinates: insertBooking.coordinates || null,
       createdAt: now, 
       updatedAt: now 
     };
