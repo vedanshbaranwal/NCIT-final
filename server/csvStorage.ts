@@ -304,11 +304,131 @@ export class CSVStorage {
   }
 
   async getProfessionals(): Promise<Professional[]> {
-    return []; // Placeholder for now
+    return []; // No professionals stored in CSV for now
+  }
+
+  async getProfessional(id: string): Promise<Professional | undefined> {
+    return undefined; // No professionals stored in CSV for now
+  }
+
+  async getProfessionalByUserId(userId: string): Promise<Professional | undefined> {
+    return undefined; // No professionals stored in CSV for now
+  }
+
+  async createProfessional(professional: any): Promise<Professional> {
+    return professional; // Basic implementation
+  }
+
+  async getProfessionalsByService(serviceId: string): Promise<Professional[]> {
+    return []; // No professionals stored in CSV for now
+  }
+
+  async getProfessionalsByLocation(location: string): Promise<Professional[]> {
+    return []; // No professionals stored in CSV for now
+  }
+
+  async getServiceableLocations(): Promise<Location[]> {
+    const locations = await this.getLocations();
+    return locations.filter(loc => loc.isServiceable);
+  }
+
+  async getActiveServiceCategories(): Promise<ServiceCategory[]> {
+    const categories = await this.getServiceCategories();
+    return categories.filter(cat => cat.isActive);
+  }
+
+  async getServicesByCategory(categoryId: string): Promise<Service[]> {
+    const services = await this.getServices();
+    return services.filter(service => service.categoryId === categoryId);
+  }
+
+  async createUser(insertUser: any): Promise<User> {
+    const user = {
+      ...insertUser,
+      id: `user_${Date.now()}`,
+      role: insertUser.role || "customer",
+      phone: insertUser.phone || null,
+      profilePicture: insertUser.profilePicture || null,
+      isVerified: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    await this.upsertUser(user);
+    return user;
+  }
+
+  async createBooking(insertBooking: any): Promise<Booking> {
+    const booking = {
+      ...insertBooking,
+      id: `booking_${Date.now()}`,
+      status: "pending",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    await this.upsertBooking(booking);
+    return booking;
+  }
+
+  async getBooking(id: string): Promise<Booking | undefined> {
+    const bookings = await this.getBookings();
+    return bookings.find(b => b.id === id);
+  }
+
+  async updateBookingStatus(id: string, status: string): Promise<Booking | undefined> {
+    const bookings = await this.getBookings();
+    const booking = bookings.find(b => b.id === id);
+    if (!booking) return undefined;
+    
+    const updatedBooking = { ...booking, status, updatedAt: new Date() };
+    await this.upsertBooking(updatedBooking);
+    return updatedBooking;
+  }
+
+  async getBookingsByCustomer(customerId: string): Promise<Booking[]> {
+    const bookings = await this.getBookings();
+    return bookings.filter(b => b.customerId === customerId);
+  }
+
+  async getBookingsByProfessional(professionalId: string): Promise<Booking[]> {
+    const bookings = await this.getBookings();
+    return bookings.filter(b => b.professionalId === professionalId);
+  }
+
+  async getReviews(): Promise<any[]> {
+    return []; // No reviews stored in CSV for now
+  }
+
+  async getReviewsByProfessional(professionalId: string): Promise<any[]> {
+    return []; // No reviews stored in CSV for now
+  }
+
+  async createReview(insertReview: any): Promise<any> {
+    return insertReview; // Basic implementation
+  }
+
+  async createContactRequest(request: any): Promise<any> {
+    const contactRequest = {
+      ...request,
+      id: `contact_${Date.now()}`,
+      status: "new",
+      createdAt: new Date()
+    };
+    return contactRequest;
+  }
+
+  async createNotificationSubscription(notification: any): Promise<any> {
+    const notificationSub = {
+      ...notification,
+      id: `notification_${Date.now()}`,
+      createdAt: new Date()
+    };
+    return notificationSub;
   }
 
   async upsertProfessional(professional: UpsertProfessional): Promise<Professional> {
-    return professional as any; // Placeholder for now
+    return professional as any; // Basic implementation
   }
 
   // Export all data to CSV files that can be imported to Google Sheets
