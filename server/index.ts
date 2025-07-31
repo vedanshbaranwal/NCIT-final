@@ -50,12 +50,8 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Seed the database on startup (with error handling)
-  try {
-    await seedDatabase();
-  } catch (error) {
-    console.log("Seeding skipped - will use existing data");
-  }
+  // Skip database seeding - now using Google Sheets
+  console.log("Using Google Sheets for data storage - no database seeding needed");
   
   const server = await registerRoutes(app);
 

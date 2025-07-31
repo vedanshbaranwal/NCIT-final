@@ -1,7 +1,7 @@
 // Script to set up Google Sheets with sample data
 // This will populate your Google Sheets with the service data
 
-const { GoogleSheetsStorage } = require('../server/googleSheets');
+import { GoogleSheetsStorage } from '../server/googleSheets.js';
 
 const sampleCategories = [
   {
@@ -153,8 +153,4 @@ async function setupGoogleSheets() {
   }
 }
 
-if (require.main === module) {
-  setupGoogleSheets();
-}
-
-module.exports = { setupGoogleSheets };
+setupGoogleSheets();

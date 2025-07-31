@@ -499,6 +499,8 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Use Google Sheets storage for Zapier integration
-import { GoogleSheetsStorage } from './googleSheets';
-export const storage = new GoogleSheetsStorage();
+// Use CSV storage for easy Google Sheets integration via Zapier
+import { CSVStorage } from './csvStorage';
+
+console.log("Using CSV storage - perfect for Google Sheets integration via Zapier");
+export const storage = new CSVStorage();
