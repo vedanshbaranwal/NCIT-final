@@ -499,5 +499,7 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Use database storage with local PostgreSQL
+// Use database storage with local PostgreSQL 
+// Note: Supabase connection string saved for when hostname resolves:
+// postgresql://postgres:vedanshho@123@db.gxarrwhxlxbjsuzpgepi.supabase.co:5432/postgres
 export const storage = new DatabaseStorage();

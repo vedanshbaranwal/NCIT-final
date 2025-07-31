@@ -50,8 +50,12 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Seed the database on startup
-  await seedDatabase();
+  // Seed the database on startup (with error handling)
+  try {
+    await seedDatabase();
+  } catch (error) {
+    console.log("Seeding skipped - will use existing data");
+  }
   
   const server = await registerRoutes(app);
 
