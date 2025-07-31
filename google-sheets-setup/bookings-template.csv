@@ -1,0 +1,1 @@
+id,customerId,professionalId,serviceId,location,address,coordinates,scheduledDate,estimatedPrice,finalPrice,status,description,specialRequirements,paymentMethod,paymentStatus,customerNotes,professionalNotes,createdAt,updatedAt

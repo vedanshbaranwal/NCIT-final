@@ -112,6 +112,11 @@ export class CSVStorage {
     }));
   }
 
+  async getActiveServiceCategories(): Promise<ServiceCategory[]> {
+    const categories = await this.getServiceCategories();
+    return categories.filter(cat => cat.isActive);
+  }
+
   async upsertServiceCategory(category: UpsertServiceCategory): Promise<ServiceCategory> {
     const categories = await this.getServiceCategories();
     const existing = categories.find(c => c.id === category.id);

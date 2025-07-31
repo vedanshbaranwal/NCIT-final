@@ -93,8 +93,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Service Categories Routes
   app.get("/api/categories", async (req, res) => {
     try {
-      const categories = await storage.getActiveServiceCategories();
-      res.json(categories);
+      const categories = await storage.getServiceCategories();
+      res.json(categories.filter(cat => cat.isActive));
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch service categories" });
     }
