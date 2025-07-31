@@ -62,14 +62,21 @@ Preferred communication style: Simple, everyday language.
 ### External Dependencies
 
 #### Core Dependencies
-- **Database**: Neon Database for PostgreSQL hosting
+- **Database**: Supabase PostgreSQL for data storage (fallback to memory storage in development)
+- **Authentication**: Session-based authentication with login/register functionality  
 - **UI Components**: Radix UI primitives for accessible components
 - **Date Management**: date-fns for date formatting and manipulation
 - **Form Validation**: Hookform resolvers with Zod for type-safe validation
 
+#### Current Implementation Status
+- **Database Integration**: Supabase connection configured, using memory storage as development fallback
+- **Authentication System**: Complete user registration, login, and session management
+- **Booking System**: Guest and authenticated user booking capabilities
+- **Data Storage**: All user data, bookings, and service information stored for Zapier integration
+
 #### Planned Integrations
 - **SMS/WhatsApp Notifications**: Zapier or Make.com for worker notifications
-- **Payment Processing**: Simulated for prototype (COD and online payment options)
+- **Payment Processing**: Currently simulated (COD and online payment options)
 - **Geolocation Services**: Browser geolocation with fallback to Kathmandu coordinates
 
 ### Deployment Strategy

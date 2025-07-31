@@ -89,9 +89,15 @@ export default function Booking() {
 
   const bookingMutation = useMutation({
     mutationFn: async (data: ExtendedBookingFormData) => {
+      // Prepare booking data with estimated price
+      const bookingData = {
+        ...data,
+        estimatedPrice: estimatedPrice.toString(),
+      };
+      
       return await apiRequest("/api/bookings", {
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify(bookingData),
       });
     },
     onSuccess: (booking) => {

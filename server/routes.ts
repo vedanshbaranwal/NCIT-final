@@ -177,21 +177,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/bookings", async (req, res) => {
     try {
-      const validatedData = insertBookingSchema.parse(req.body);
+      const bookingData = req.body;
       
-      // If no customerId provided, create a guest booking
-      if (!validatedData.customerId) {
-        // Create a guest user
-        const guestUser = await storage.createUser({
-          username: `guest_${Date.now()}`,
-          email: `guest_${Date.now()}@temp.com`,
-          password: "temp_password",
-          fullName: validatedData.address.split(',')[0] || "Guest User",
-          role: "customer"
-        });
-        validatedData.customerId = guestUser.id;
+      // Get service to calculate price
+      const service = await storage.getService(bookingData.serviceId);
+      if (!service) {
+        return res.status(404).json({ message: "Service not found" });
       }
       
+      // Set estimated price if not provided
+      if (!bookingData.estimatedPrice) {
+        bookingData.estimatedPrice = service.basePrice;
+      }
+      
+      // Convert scheduledDate string to Date object if needed
+      if (typeof bookingData.scheduledDate === 'string') {
+        const parsedDate = new Date(bookingData.scheduledDate);
+        if (isNaN(parsedDate.getTime())) {
+          return res.status(400).json({ message: "Invalid date format" });
+        }
+        bookingData.scheduledDate = parsedDate;
+      }
+      
+      // Get current user or create guest user
+      const userId = (req.session as any)?.userId;
+      if (!bookingData.customerId) {
+        if (userId) {
+          bookingData.customerId = userId;
+        } else {
+          // Create a guest user
+          const guestUser = await storage.createUser({
+            username: `guest_${Date.now()}`,
+            email: `guest_${Date.now()}@temp.com`,
+            password: "temp_password",
+            fullName: bookingData.address ? bookingData.address.split(',')[0] : "Guest User",
+            role: "customer"
+          });
+          bookingData.customerId = guestUser.id;
+        }
+      }
+      
+      const validatedData = insertBookingSchema.parse(bookingData);
       const booking = await storage.createBooking(validatedData);
       
       // Auto-assign professional based on service and location
