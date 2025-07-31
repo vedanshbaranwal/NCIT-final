@@ -499,7 +499,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Use memory storage as fallback if database connection fails
-export const storage = process.env.NODE_ENV === "development" 
-  ? new MemStorage() 
-  : new DatabaseStorage();
+// Use database storage with local PostgreSQL
+export const storage = new DatabaseStorage();
