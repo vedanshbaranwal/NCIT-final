@@ -109,7 +109,7 @@ export default function Services() {
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     {categories.map((category: any) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
@@ -124,7 +124,7 @@ export default function Services() {
                     <SelectValue placeholder="All Locations" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Locations</SelectItem>
+                    <SelectItem value="all">All Locations</SelectItem>
                     {locations.map((location: any) => (
                       <SelectItem key={location.id} value={location.name}>
                         {location.name}
@@ -139,7 +139,7 @@ export default function Services() {
                     <SelectValue placeholder="Sort by Price" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No Sorting</SelectItem>
+                    <SelectItem value="none">No Sorting</SelectItem>
                     <SelectItem value="low-to-high">Price: Low to High</SelectItem>
                     <SelectItem value="high-to-low">Price: High to Low</SelectItem>
                   </SelectContent>
