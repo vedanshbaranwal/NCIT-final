@@ -9,6 +9,7 @@ import Booking from "@/pages/booking";
 import WorkerSignup from "@/pages/worker-signup";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
+import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/worker-signup" component={WorkerSignup} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

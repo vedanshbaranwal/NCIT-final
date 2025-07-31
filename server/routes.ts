@@ -173,7 +173,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         bookings = await storage.getBookings();
       }
       
-      res.json(bookings);
+      // Get detailed booking information
+      const bookingsWithDetails = [];
+      for (const booking of bookings) {
+        const customer = await storage.getUser(booking.customerId);
+        const service = await storage.getService(booking.serviceId);
+        const professional = booking.professionalId ? await storage.getProfessional(booking.professionalId) : null;
+        const professionalUser = professional ? await storage.getUser(professional.userId) : null;
+        
+        bookingsWithDetails.push({
+          ...booking,
+          customer: customer ? {
+            id: customer.id,
+            fullName: customer.fullName,
+            phone: customer.phone,
+            email: customer.email
+          } : null,
+          service: service ? {
+            id: service.id,
+            name: service.name,
+            nameNepali: service.nameNepali,
+            basePrice: service.basePrice
+          } : null,
+          professional: professional && professionalUser ? {
+            id: professional.id,
+            fullName: professionalUser.fullName,
+            phone: professionalUser.phone,
+            rating: professional.rating
+          } : null
+        });
+      }
+      
+      res.json(bookingsWithDetails);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch bookings" });
     }
