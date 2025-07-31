@@ -95,12 +95,13 @@ export default function Booking() {
         estimatedPrice: estimatedPrice.toString(),
       };
       
-      return await apiRequest("/api/bookings", {
+      const response = await apiRequest("/api/bookings", {
         method: "POST",
         body: JSON.stringify(bookingData),
       });
+      return await response.json();
     },
-    onSuccess: (booking) => {
+    onSuccess: (booking: any) => {
       toast({
         title: "Booking Successful!",
         description: `Your service has been booked! Booking ID: ${booking.id}`,
@@ -122,7 +123,7 @@ export default function Booking() {
   };
 
   // Calculate estimated price
-  const estimatedPrice = service ? parseFloat(service.basePrice) : 0;
+  const estimatedPrice = service ? parseFloat((service as any).basePrice) : 0;
   const serviceFee = estimatedPrice * 0.1; // 10% service fee
   const totalPrice = estimatedPrice + serviceFee;
 
@@ -185,9 +186,9 @@ export default function Booking() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-              Book {service.name}
+              Book {(service as any).name}
             </h1>
-            <p className="text-gray-600">{service.description}</p>
+            <p className="text-gray-600">{(service as any).description}</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -201,16 +202,16 @@ export default function Booking() {
                     <i className="fas fa-bolt text-white"></i>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{service.name}</h3>
-                    {service.nameNepali && (
-                      <p className="text-sm text-gray-600 font-nepali">{service.nameNepali}</p>
+                    <h3 className="font-semibold text-gray-900">{(service as any).name}</h3>
+                    {(service as any).nameNepali && (
+                      <p className="text-sm text-gray-600 font-nepali">{(service as any).nameNepali}</p>
                     )}
                     <div className="flex items-center space-x-4 mt-1 text-sm text-gray-600">
                       <span className="flex items-center">
                         <Clock className="h-4 w-4 mr-1" />
-                        {service.estimatedDuration} mins
+                        {(service as any).estimatedDuration} mins
                       </span>
-                      <span>NPR {service.basePrice}/{service.unit}</span>
+                      <span>NPR {(service as any).basePrice}/{(service as any).unit}</span>
                     </div>
                   </div>
                 </div>
@@ -230,7 +231,7 @@ export default function Booking() {
                         <SelectValue placeholder="Select your location" />
                       </SelectTrigger>
                       <SelectContent>
-                        {locations.map((location: any) => (
+                        {(locations as any[])?.map((location: any) => (
                           <SelectItem key={location.id} value={location.name}>
                             {location.name} ({location.nameNepali})
                           </SelectItem>
@@ -284,7 +285,7 @@ export default function Booking() {
                           mode="single"
                           selected={selectedDate}
                           onSelect={setSelectedDate}
-                          disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
+                          disabled={(date: Date) => date < new Date() || date < new Date("1900-01-01")}
                           initialFocus
                         />
                       </PopoverContent>
@@ -380,7 +381,7 @@ export default function Booking() {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Service</span>
-                    <span className="font-medium">{service.name}</span>
+                    <span className="font-medium">{(service as any).name}</span>
                   </div>
                   
                   <div className="flex justify-between">
