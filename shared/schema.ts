@@ -173,3 +173,15 @@ export type ContactRequest = typeof contactRequests.$inferSelect;
 export type InsertContactRequest = z.infer<typeof insertContactRequestSchema>;
 export type AppNotification = typeof appNotifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+
+// Static data exports
+const locationData: Location[] = [
+  { id: "1", name: "Kathmandu", nameNepali: "काठमाडौं", type: "city", parentId: null, isServiceable: true },
+  { id: "2", name: "Lalitpur", nameNepali: "ललितपुर", type: "city", parentId: null, isServiceable: true },
+  { id: "3", name: "Bhaktapur", nameNepali: "भक्तपुर", type: "city", parentId: null, isServiceable: true },
+  { id: "4", name: "Pokhara", nameNepali: "पोखरा", type: "city", parentId: null, isServiceable: false }
+];
+
+export function getNepalLocations(): Location[] {
+  return locationData;
+}

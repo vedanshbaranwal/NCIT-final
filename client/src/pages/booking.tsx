@@ -54,7 +54,6 @@ export default function Booking() {
 
   const { data: professionals = [] } = useQuery({
     queryKey: ["/api/professionals"],
-    queryParameters: serviceId ? { serviceId } : undefined,
   });
 
   const {

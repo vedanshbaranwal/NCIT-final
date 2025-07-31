@@ -13,23 +13,23 @@
   --card-foreground: hsl(20, 14.3%, 4.1%);
   --border: hsl(20, 5.9%, 90%);
   --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(16, 100%, 60%);
+  --primary: hsl(160, 84%, 39%);
   --primary-foreground: hsl(0, 0%, 98%);
-  --secondary: hsl(60, 4.8%, 95.9%);
-  --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(60, 4.8%, 95.9%);
-  --accent-foreground: hsl(24, 9.8%, 10%);
+  --secondary: hsl(160, 10%, 95%);
+  --secondary-foreground: hsl(160, 10%, 10%);
+  --accent: hsl(160, 10%, 95%);
+  --accent-foreground: hsl(160, 10%, 10%);
   --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(160, 84%, 39%);
   --radius: 0.5rem;
   
-  /* Nepal-inspired colors */
-  --saffron: hsl(16, 100%, 60%);
-  --forest: hsl(151, 55%, 35%);
-  --mountain-gold: hsl(51, 85%, 55%);
-  --nepal-blue: hsl(218, 100%, 29%);
-  --warm-gray: hsl(210, 17%, 98%);
+  /* Modern emerald/teal theme */
+  --emerald: hsl(160, 84%, 39%);
+  --teal: hsl(180, 84%, 39%);
+  --emerald-light: hsl(160, 84%, 95%);
+  --teal-light: hsl(180, 84%, 95%);
+  --neutral-light: hsl(210, 17%, 98%);
 }
 
 .dark {
@@ -43,15 +43,15 @@
   --card-foreground: hsl(0, 0%, 98%);
   --border: hsl(240, 3.7%, 15.9%);
   --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(16, 100%, 60%);
+  --primary: hsl(160, 84%, 39%);
   --primary-foreground: hsl(0, 0%, 98%);
-  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary: hsl(160, 5%, 15%);
   --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(240, 3.7%, 15.9%);
+  --accent: hsl(160, 5%, 15%);
   --accent-foreground: hsl(0, 0%, 98%);
   --destructive: hsl(0, 62.8%, 30.6%);
   --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(240, 4.9%, 83.9%);
+  --ring: hsl(160, 84%, 39%);
 }
 
 @layer base {

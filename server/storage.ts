@@ -202,8 +202,14 @@ export class MemStorage implements IStorage {
     const professional: Professional = { 
       ...insertProfessional, 
       id, 
+      isVerified: insertProfessional.isVerified || false,
+      bio: insertProfessional.bio || null,
+      experience: insertProfessional.experience || null,
+      hourlyRate: insertProfessional.hourlyRate || null,
       rating: "0.00",
       totalJobs: 0,
+      availabilityStatus: insertProfessional.availabilityStatus || "available",
+      documents: insertProfessional.documents || null,
       createdAt: now 
     };
     this.professionals.set(id, professional);
@@ -240,10 +246,13 @@ export class MemStorage implements IStorage {
     const booking: Booking = { 
       ...insertBooking, 
       id, 
+      description: insertBooking.description || null,
       professionalId: null,
       finalPrice: null,
       status: "pending",
       paymentStatus: "pending",
+      customerNotes: insertBooking.customerNotes || null,
+      professionalNotes: insertBooking.professionalNotes || null,
       createdAt: now, 
       updatedAt: now 
     };
@@ -283,6 +292,8 @@ export class MemStorage implements IStorage {
     const review: Review = { 
       ...insertReview, 
       id, 
+      comment: insertReview.comment || null,
+      response: insertReview.response || null,
       isVerified: false,
       createdAt: now 
     };
