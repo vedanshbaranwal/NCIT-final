@@ -1,9 +1,0 @@
-id,name,nameNepali,description,icon,color,isActive,createdAt,updatedAt
-"1","Electrician","बिजुली मिस्त्री","Electrical repairs and installations","fas fa-bolt","yellow","false","2025-07-31T19:09:35.952Z","2025-07-31T19:09:35.952Z"
-"2","Plumber","प्लम्बर","Pipe and fixture repairs","fas fa-wrench","blue","false","2025-07-31T19:09:35.958Z","2025-07-31T19:09:35.958Z"
-"3","House Cleaning","घर सफाई","Deep and regular cleaning","fas fa-broom","green","false","2025-07-31T19:09:35.961Z","2025-07-31T19:09:35.961Z"
-"4","AC Repair","ए.सी. मर्मत","AC service and installation","fas fa-snowflake","cyan","false","2025-07-31T19:09:35.965Z","2025-07-31T19:09:35.965Z"
-"5","Carpenter","सुतारी","Furniture and wood work","fas fa-hammer","amber","false","2025-07-31T19:09:35.969Z","2025-07-31T19:09:35.969Z"
-"6","Painting","रंगाई","Interior and exterior painting","fas fa-paint-roller","purple","false","2025-07-31T19:09:35.971Z","2025-07-31T19:09:35.971Z"
-"7","Appliance Repair","उपकरण मर्मत","TV, washing machine repairs","fas fa-tools","red","false","2025-07-31T19:09:35.973Z","2025-07-31T19:09:35.973Z"
-"8","Pest Control","कीरा नियन्त्रण","Safe and effective pest control","fas fa-bug","teal","true","2025-07-31T19:09:35.977Z","2025-07-31T19:09:35.977Z"

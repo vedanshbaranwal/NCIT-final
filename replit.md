@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a modern service-based platform named **"जरूरी छ - आवश्यकतामा रोजगार"** designed to connect customers with trusted professionals across Nepal. The platform facilitates booking various home services like electricians, plumbers, cleaners, and other skilled professionals.
+This is a clean, simplified service booking platform named **"जरूरी छ - आवश्यकतामा रोजगार"** designed to connect customers with trusted professionals across Nepal. The platform facilitates booking various home services like electricians, plumbers, cleaners, and other skilled professionals.
 
 ## User Preferences
 
