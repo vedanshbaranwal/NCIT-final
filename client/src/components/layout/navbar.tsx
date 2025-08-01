@@ -43,7 +43,12 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
+            <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
+              <img 
+                src="https://i.imgur.com/cwUbp8e.png" 
+                alt="जरूरी छ Logo" 
+                className="w-10 h-10 rounded-lg object-contain"
+              />
               <h1 className="text-2xl font-bold text-[hsl(16,100%,60%)] font-nepali">जरूरी छ</h1>
             </Link>
           </div>
