@@ -69,7 +69,13 @@ export default function Booking() {
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       serviceId: serviceId || "",
+      customerName: user?.fullName || "",
+      customerEmail: user?.email || "",
+      customerPhone: user?.phone || "",
+      location: user?.location || "",
       paymentMethod: "cash",
+      address: "",
+      specialRequests: "",
     },
   });
 
@@ -94,27 +100,54 @@ export default function Booking() {
     mutationFn: async (data: ExtendedBookingFormData) => {
       // Prepare booking data with estimated price
       const bookingData = {
-        ...data,
+        serviceId: data.serviceId,
+        customerName: data.customerName,
+        customerEmail: data.customerEmail,
+        customerPhone: data.customerPhone,
+        location: data.location,
+        address: data.address,
+        scheduledDate: data.scheduledDate,
+        specialRequests: data.specialRequests || "",
+        paymentMethod: data.paymentMethod,
         estimatedPrice: estimatedPrice.toString(),
+        customerId: user?.id || null,
       };
+      
+      console.log("Submitting booking data:", bookingData);
       
       const response = await apiRequest("/api/bookings", {
         method: "POST",
         body: JSON.stringify(bookingData),
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Booking failed");
+      }
+      
       return await response.json();
     },
     onSuccess: (booking: any) => {
+      console.log("Booking successful:", booking);
       toast({
-        title: "Booking Successful!",
-        description: `Your service has been booked! Booking ID: ${booking.id}`,
+        title: "Booking Confirmed! ✅",
+        description: `Your ${service?.name} has been booked successfully. Booking ID: ${booking.id}`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
-      setLocation("/");
+      
+      // Reset form state
+      setSelectedDate(undefined);
+      setSelectedTime("");
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        setLocation("/");
+      }, 2000);
     },
     onError: (error: any) => {
+      console.error("Booking error:", error);
       toast({
-        title: "Booking Failed",
+        title: "Booking Failed ❌",
         description: error.message || "Please check your details and try again.",
         variant: "destructive",
       });
@@ -197,6 +230,20 @@ export default function Booking() {
                   sign in
                 </Button>
                 {" "}to track your bookings and get updates.
+              </AlertDescription>
+            </Alert>
+          </div>
+        </div>
+      )}
+      
+      {/* Success Message */}
+      {bookingMutation.isSuccess && (
+        <div className="bg-green-50 border-l-4 border-green-400 p-4">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Alert>
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription className="text-green-800">
+                Booking successfully submitted! You will receive confirmation shortly.
               </AlertDescription>
             </Alert>
           </div>
@@ -434,10 +481,17 @@ export default function Booking() {
 
                 <Button
                   type="submit"
-                  disabled={bookingMutation.isPending}
-                  className="w-full bg-[hsl(16,100%,60%)] hover:bg-[hsl(16,100%,55%)] text-white py-3 rounded-lg font-semibold mountain-shadow"
+                  disabled={!selectedDate || !selectedTime || bookingMutation.isPending}
+                  className="w-full bg-[hsl(16,100%,60%)] hover:bg-[hsl(16,100%,55%)] text-white py-3 rounded-lg font-semibold"
                 >
-                  {bookingMutation.isPending ? "Booking..." : "Confirm Booking"}
+                  {bookingMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Processing Booking...
+                    </>
+                  ) : (
+                    `Book Service - NPR ${totalPrice.toFixed(2)}`
+                  )}
                 </Button>
 
                 <p className="text-xs text-gray-500 mt-4 text-center">
