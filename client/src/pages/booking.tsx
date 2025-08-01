@@ -25,15 +25,22 @@ import { insertBookingSchema } from "@shared/schema";
 import { useAuth } from "@/contexts/AuthContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-type BookingFormData = z.infer<typeof insertBookingSchema>;
-
-const bookingFormSchema = insertBookingSchema.extend({
+// Simple booking form schema
+const bookingFormSchema = z.object({
+  serviceId: z.string().min(1, "Service is required"),
+  customerName: z.string().min(1, "Name is required"),
+  customerEmail: z.string().email("Valid email is required"),
+  customerPhone: z.string().min(10, "Valid phone number is required"),
+  location: z.string().min(1, "Location is required"),
+  address: z.string().min(1, "Address is required"),
   scheduledDate: z.date({
-    required_error: "Please select a date and time for your service.",
+    required_error: "Date and time is required",
   }),
+  paymentMethod: z.enum(["cash", "online", "card"]),
+  specialRequests: z.string().optional(),
 });
 
-type ExtendedBookingFormData = z.infer<typeof bookingFormSchema>;
+type BookingFormData = z.infer<typeof bookingFormSchema>;
 
 export default function Booking() {
   const params = useParams();
@@ -65,14 +72,14 @@ export default function Booking() {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<ExtendedBookingFormData>({
+  } = useForm<BookingFormData>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       serviceId: serviceId || "",
       customerName: user?.fullName || "",
       customerEmail: user?.email || "",
       customerPhone: user?.phone || "",
-      location: user?.location || "",
+      location: "",
       paymentMethod: "cash",
       address: "",
       specialRequests: "",
@@ -97,26 +104,22 @@ export default function Booking() {
   }, [selectedDate, selectedTime, setValue]);
 
   const bookingMutation = useMutation({
-    mutationFn: async (data: ExtendedBookingFormData) => {
-      // Prepare booking data with estimated price
+    mutationFn: async (data: BookingFormData) => {
       const bookingData = {
         serviceId: data.serviceId,
-        customerName: data.customerName,
-        customerEmail: data.customerEmail,
-        customerPhone: data.customerPhone,
+        customerId: user?.id || null,
         location: data.location,
         address: data.address,
         scheduledDate: data.scheduledDate,
-        specialRequests: data.specialRequests || "",
         paymentMethod: data.paymentMethod,
+        specialRequirements: data.specialRequests || "",
         estimatedPrice: estimatedPrice.toString(),
-        customerId: user?.id || null,
       };
       
-      console.log("Submitting booking data:", bookingData);
-      
-      const response = await apiRequest("/api/bookings", {
+      const response = await fetch("/api/bookings", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(bookingData),
       });
       
@@ -128,33 +131,37 @@ export default function Booking() {
       return await response.json();
     },
     onSuccess: (booking: any) => {
-      console.log("Booking successful:", booking);
       toast({
         title: "Booking Confirmed! ✅",
-        description: `Your ${service?.name} has been booked successfully. Booking ID: ${booking.id}`,
+        description: `Your booking has been confirmed! Booking ID: ${booking.id}`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
       
-      // Reset form state
       setSelectedDate(undefined);
       setSelectedTime("");
       
-      // Redirect after 2 seconds
       setTimeout(() => {
         setLocation("/");
       }, 2000);
     },
     onError: (error: any) => {
-      console.error("Booking error:", error);
       toast({
-        title: "Booking Failed ❌",
-        description: error.message || "Please check your details and try again.",
+        title: "Booking Failed",
+        description: error.message || "Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: ExtendedBookingFormData) => {
+  const onSubmit = (data: BookingFormData) => {
+    if (!selectedDate || !selectedTime) {
+      toast({
+        title: "Missing Information",
+        description: "Please select a date and time for your service.",
+        variant: "destructive",
+      });
+      return;
+    }
     bookingMutation.mutate(data);
   };
 
@@ -381,29 +388,17 @@ export default function Booking() {
                 )}
               </Card>
 
-              {/* Additional Details */}
+              {/* Special Requests */}
               <Card className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Additional Details</h2>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="description">Service Description</Label>
-                    <Textarea
-                      id="description"
-                      {...register("description")}
-                      placeholder="Describe what exactly needs to be done"
-                      rows={3}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="specialRequirements">Special Requirements</Label>
-                    <Textarea
-                      id="specialRequirements"
-                      {...register("specialRequirements")}
-                      placeholder="Any special tools, materials, or requirements"
-                      rows={2}
-                    />
-                  </div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Special Requests</h2>
+                <div>
+                  <Label htmlFor="specialRequests">Additional Notes (Optional)</Label>
+                  <Textarea
+                    id="specialRequests"
+                    {...register("specialRequests")}
+                    placeholder="Any special requirements or instructions..."
+                    rows={3}
+                  />
                 </div>
               </Card>
 
