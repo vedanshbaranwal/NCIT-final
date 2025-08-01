@@ -116,12 +116,16 @@ export default function Booking() {
         estimatedPrice: estimatedPrice.toString(),
       };
       
+      console.log("Sending booking data to API:", bookingData);
+      
       const response = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(bookingData),
       });
+      
+      console.log("API response status:", response.status);
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -154,6 +158,11 @@ export default function Booking() {
   });
 
   const onSubmit = (data: BookingFormData) => {
+    console.log("Form submitted with data:", data);
+    console.log("Selected date:", selectedDate);
+    console.log("Selected time:", selectedTime);
+    console.log("Form errors:", errors);
+    
     if (!selectedDate || !selectedTime) {
       toast({
         title: "Missing Information",
@@ -162,6 +171,8 @@ export default function Booking() {
       });
       return;
     }
+    
+    console.log("Submitting booking...");
     bookingMutation.mutate(data);
   };
 
@@ -328,6 +339,49 @@ export default function Booking() {
                     />
                     {errors.address && (
                       <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+
+              {/* Contact Information */}
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Contact Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="customerName">Full Name *</Label>
+                    <Input
+                      id="customerName"
+                      {...register("customerName")}
+                      placeholder="Enter your full name"
+                    />
+                    {errors.customerName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.customerName.message}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="customerPhone">Phone Number *</Label>
+                    <Input
+                      id="customerPhone"
+                      {...register("customerPhone")}
+                      placeholder="98XXXXXXXX"
+                    />
+                    {errors.customerPhone && (
+                      <p className="text-red-500 text-sm mt-1">{errors.customerPhone.message}</p>
+                    )}
+                  </div>
+                  
+                  <div className="md:col-span-2">
+                    <Label htmlFor="customerEmail">Email Address *</Label>
+                    <Input
+                      id="customerEmail"
+                      type="email"
+                      {...register("customerEmail")}
+                      placeholder="your.email@example.com"
+                    />
+                    {errors.customerEmail && (
+                      <p className="text-red-500 text-sm mt-1">{errors.customerEmail.message}</p>
                     )}
                   </div>
                 </div>
