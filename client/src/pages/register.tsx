@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/contexts/AuthContext";
 
 const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -26,6 +27,7 @@ export default function Register() {
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { login } = useAuth();
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -48,12 +50,11 @@ export default function Register() {
       return await response.json();
     },
     onSuccess: (data) => {
+      login(data);
       toast({
         title: "Account Created!",
         description: `Welcome ${data.fullName}! You're now registered.`,
       });
-      // Auto-login after successful registration
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       setLocation("/");
     },
     onError: (error: any) => {

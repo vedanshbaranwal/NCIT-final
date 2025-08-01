@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import Header from "@/components/layout/header";
+import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,12 +16,14 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Clock, MapPin, Star, Calendar as CalendarIcon, CreditCard, Banknote, Smartphone } from "lucide-react";
+import { Clock, MapPin, Star, Calendar as CalendarIcon, CreditCard, Banknote, Smartphone, CheckCircle, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { insertBookingSchema } from "@shared/schema";
+import { useAuth } from "@/contexts/AuthContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 type BookingFormData = z.infer<typeof insertBookingSchema>;
 
@@ -38,6 +40,7 @@ export default function Booking() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user, isAuthenticated } = useAuth();
   const serviceId = params.serviceId;
   
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -139,7 +142,7 @@ export default function Booking() {
   if (serviceLoading) {
     return (
       <div className="min-h-screen bg-[hsl(210,17%,98%)] font-inter">
-        <Header />
+        <Navbar />
         <div className="pt-8 pb-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <Card className="p-8">
@@ -161,7 +164,7 @@ export default function Booking() {
   if (!service) {
     return (
       <div className="min-h-screen bg-[hsl(210,17%,98%)] font-inter">
-        <Header />
+        <Navbar />
         <div className="pt-8 pb-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <Card className="p-8 text-center">
@@ -180,7 +183,25 @@ export default function Booking() {
 
   return (
     <div className="min-h-screen bg-[hsl(210,17%,98%)] font-inter">
-      <Header />
+      <Navbar />
+      
+      {/* Authentication Alert */}
+      {!isAuthenticated && (
+        <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                You can book as a guest, but{" "}
+                <Button variant="link" className="p-0 h-auto" onClick={() => setLocation("/login")}>
+                  sign in
+                </Button>
+                {" "}to track your bookings and get updates.
+              </AlertDescription>
+            </Alert>
+          </div>
+        </div>
+      )}
       
       <main className="pt-8 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
