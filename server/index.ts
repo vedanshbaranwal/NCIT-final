@@ -1,6 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
-import { registerRoutes } from "./routes";
+import simpleRoutes from "./simple-routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 
@@ -52,7 +52,11 @@ app.use((req, res, next) => {
 (async () => {
   console.log("Database initialized with service data");
   
-  const server = await registerRoutes(app);
+  // Register API routes
+  app.use("/api", simpleRoutes);
+  
+  const { createServer } = await import("http");
+  const server = createServer(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
