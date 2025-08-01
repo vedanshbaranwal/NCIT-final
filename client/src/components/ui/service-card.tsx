@@ -24,13 +24,40 @@ interface ServiceCardProps {
   className?: string;
 }
 
-// Service images mapping for Nepali context
+// Import generated service images
+import electricalWiringImage from "@assets/generated_images/Electrical_wiring_service_6c1f6770.png";
+import switchSocketImage from "@assets/generated_images/Switch_socket_installation_2bf29104.png";
+import fanInstallationImage from "@assets/generated_images/Ceiling_fan_installation_baa53dfe.png";
+import pipeRepairImage from "@assets/generated_images/Pipe_repair_service_1bd4c6e6.png";
+import bathroomFittingImage from "@assets/generated_images/Bathroom_fixture_installation_ece01c4f.png";
+import faucetRepairImage from "@assets/generated_images/Faucet_tap_repair_961df168.png";
+import deepCleaningImage from "@assets/generated_images/Deep_house_cleaning_be025256.png";
+import regularCleaningImage from "@assets/generated_images/Regular_house_cleaning_9440e18d.png";
+import acServiceImage from "@assets/generated_images/AC_service_cleaning_e078e060.png";
+import acInstallationImage from "@assets/generated_images/AC_installation_service_8644ce93.png";
+import furnitureRepairImage from "@assets/generated_images/Furniture_repair_service_366acc6a.png";
+import customFurnitureImage from "@assets/generated_images/Custom_furniture_making_17bd0d11.png";
+import interiorPaintingImage from "@assets/generated_images/Interior_wall_painting_a7c051f5.png";
+import tvRepairImage from "@assets/generated_images/TV_electronics_repair_5f8b4a39.png";
+import pestControlImage from "@assets/generated_images/Home_pest_control_6f6845a3.png";
+
+// Service images mapping with generated images
 const serviceImages: Record<string, string> = {
-  "1": "https://i.imgur.com/cwUbp8e.png", // Electrical Repair - fallback to logo for now
-  "2": "https://i.imgur.com/cwUbp8e.png", // Switch & Socket Installation  
-  "3": "https://i.imgur.com/cwUbp8e.png", // Fan Installation
-  "4": "https://i.imgur.com/cwUbp8e.png", // Plumbing
-  "5": "https://i.imgur.com/cwUbp8e.png", // Cleaning
+  "1": electricalWiringImage, // Electrical Wiring
+  "2": switchSocketImage, // Switch & Socket Installation  
+  "3": fanInstallationImage, // Fan Installation
+  "4": pipeRepairImage, // Pipe Repair
+  "5": bathroomFittingImage, // Bathroom Fitting
+  "6": faucetRepairImage, // Tap & Faucet Repair
+  "7": deepCleaningImage, // Deep House Cleaning
+  "8": regularCleaningImage, // Regular Cleaning
+  "9": acServiceImage, // AC Service & Cleaning
+  "10": acInstallationImage, // AC Installation
+  "11": furnitureRepairImage, // Furniture Repair
+  "12": customFurnitureImage, // Custom Furniture
+  "13": interiorPaintingImage, // Interior Painting
+  "14": tvRepairImage, // TV Repair
+  "15": pestControlImage, // Home Pest Control
 };
 
 const getIconColorClass = (color: string) => {
@@ -49,7 +76,7 @@ const getIconColorClass = (color: string) => {
 
 export function ServiceCard({ service, onClick, className = "" }: ServiceCardProps) {
   const iconColorClass = service.category ? getIconColorClass(service.category.color) : "from-gray-400 to-gray-600";
-  const serviceImage = serviceImages[service.id] || "https://i.imgur.com/cwUbp8e.png";
+  const serviceImage = serviceImages[service.id] || electricalWiringImage;
   
   return (
     <Card 
