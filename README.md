@@ -10,6 +10,7 @@ with clients, focusing especially on workers who do not have smartphones or reli
 internet access. By leveraging AI, automated voice calls, and SMS, Jaruri Xa bridges
 the digital divide, enabling workers to receive and accept job offers instantly
 without needing any advanced technology.
+<img width="1919" height="883" alt="image" src="https://github.com/user-attachments/assets/891da020-ad7f-4ac9-9996-c36367180bb9" />
 
 Key Features:
 -------------
@@ -19,6 +20,9 @@ Key Features:
 - Partnership with NGOs and training centers for skill verification and credibility badges.
 - Real-time booking confirmation and seamless client-worker communication.
 - Supports local economies by empowering marginalized gig workers.
+<img width="351" height="445" alt="image" src="https://github.com/user-attachments/assets/9c9d0ec1-b4ca-48ad-a848-a1b39c287d75" />
+![WhatsApp-Image-2025-08-01-at-12 53 50_b4455f6b](https://github.com/user-attachments/assets/ee8e27a4-1bb9-4894-a0ae-43cd71e14128)
+![WhatsApp-Image-2025-08-01-at-12 55 12_0770adf1](https://github.com/user-attachments/assets/4ec564df-fd20-406e-bbb4-591ad2575034)
 
 Technology Stack:
 -----------------
@@ -36,6 +40,7 @@ How It Works:
 4. Workers confirm availability via voice or SMS response.
 5. Booking is confirmed and tracked in real time.
 6. Workers get verified through NGO/INGO partnerships and training programs.
+<img width="363" height="806" alt="image" src="https://github.com/user-attachments/assets/f73bb6a6-15f0-4382-aa71-86c22ac7768e" />
 
 Getting Started:
 ----------------
@@ -44,6 +49,7 @@ Getting Started:
 - Integrate SMS and voice call APIs for worker communication.
 - Deploy the React frontend for clients to post requests.
 - Partner with local NGOs/INGOs for worker onboarding and training.
+<img width="832" height="675" alt="image" src="https://github.com/user-attachments/assets/b4706af1-32a4-4536-8a2e-e702186ddc93" />
 
 Contact:
 --------
