@@ -5,123 +5,115 @@
 ---
 
 ## Overview  
-Jaruri Xa is a unique AI-driven platform designed to empower skilled service workers in Nepal by connecting them with clients through automated voice calls and SMS, eliminating the need for smartphones or internet access. Built with Replit AI assistance, the platform leverages AI automation, Supabase/PostgreSQL as the backend database, and Zapier for workflow automation to deliver seamless gig economy services.
+Jaruri Xa is an AI-powered platform built to bridge the gap between local skilled, semi-skilled, and unskilled workers in Nepal and the people who need their services. It leverages automated voice calls, SMS notifications, and AI-driven workflows to empower workers without smartphones or consistent internet access, creating an inclusive gig economy ecosystem.
+
+The platform connects clients with workers for common household and maintenance services such as electricians, plumbers, cleaners, cooks, and more — simplifying access to trusted help while creating job opportunities for marginalized communities.
 
 ---
 
-## Screenshots & UI Overview
+## Social Impact & Problem Solved  
+
+Nepal's informal sector consists of millions of workers in menial and gig jobs who often lack smartphone access or digital literacy, making it difficult for them to find consistent work or connect with customers. Simultaneously, many customers struggle to find reliable service providers in their localities, wasting time and resources.
+
+Jaruri Xa addresses this challenge by:  
+- **Digitally empowering marginalized workers** through AI-driven automation that uses SMS and voice calls, eliminating the need for smartphones or internet access.  
+- **Boosting local economies** by increasing job opportunities for semi-skilled and unskilled workers in their own communities.  
+- **Improving service access** for customers by providing a seamless, easy-to-use platform to book trusted professionals quickly.  
+- **Promoting formalization** of gig work via verified profiles, transparent ratings, and partnerships with NGOs for skill validation.  
+- **Supporting Sustainable Development Goal #8** — Decent Work and Economic Growth — by enabling fair, accessible employment opportunities for all.  
+
+In essence, Jaruri Xa creates an inclusive digital marketplace that benefits both workers and clients, fostering economic growth and social equity.
+
+---
+
+## Project Screenshots
 
 ### Homepage and Location Selection  
-![Homepage showing service categories and location selection](https://github.com/user-attachments/assets/891da020-ad7f-4ac9-9996-c36367180bb9)  
-Users start by selecting their city or location to personalize the service offerings.
-
----
+![Homepage and Location Selection](https://github.com/user-attachments/assets/891da020-ad7f-4ac9-9996-c36367180bb9)
 
 ### Service Selection Cards  
-![Service cards showcasing various available services](https://github.com/user-attachments/assets/9c9d0ec1-b4ca-48ad-a848-a1b39c287d75)  
-Interactive, animated cards present services such as electricians, plumbers, cleaners, tailors, and more.
+![Service Selection](https://github.com/user-attachments/assets/9c9d0ec1-b4ca-48ad-a848-a1b39c287d75)
 
----
+### Booking Cart & Checkout  
+![Booking Cart](https://github.com/user-attachments/assets/ee8e27a4-1bb9-4894-a0ae-43cd71e14128)
 
-### Booking Cart Interface  
-![Booking cart interface with selected services and checkout options](https://github.com/user-attachments/assets/ee8e27a4-1bb9-4894-a0ae-43cd71e14128)  
-Users can review their chosen services, select payment method (cash on delivery or mobile payments), and finalize booking.
-
----
-
-### Worker Job Notification Workflow  
-![Automated notifications workflow for workers](https://github.com/user-attachments/assets/4c8b193c-c5b9-4f70-a6d2-9082cdad3284)  
-The platform automatically notifies the nearest suitable workers via SMS or automated voice calls to accept jobs.
-
----
+### Worker Notification Workflow  
+![Notification Workflow](https://github.com/user-attachments/assets/4c8b193c-c5b9-4f70-a6d2-9082cdad3284)
 
 ### Admin Dashboard  
-![Admin dashboard showing bookings, worker profiles, and verification status](https://github.com/user-attachments/assets/f73bb6a6-15f0-4382-aa71-86c22ac7768e)  
-Administrators can verify workers, manage bookings, track payments, and resolve disputes.
+![Admin Dashboard](https://github.com/user-attachments/assets/f73bb6a6-15f0-4382-aa71-86c22ac7768e)
+
+### Worker Profile  
+![Worker Profile](https://github.com/user-attachments/assets/b4706af1-32a4-4536-8a2e-e702186ddc93)
 
 ---
 
-### Service Provider Profiles  
-![Worker profile example](https://github.com/user-attachments/assets/b4706af1-32a4-4536-8a2e-e702186ddc93)  
-Each worker has a detailed profile including skill verification badges and ratings to build client trust.
+## Features  
 
----
-
-## Key Features  
-- AI-driven job matching connecting clients with verified workers  
-- Automated voice call and SMS notifications for workers without smartphones  
-- Responsive React frontend with a clean, minimal, and modern design  
-- Supabase/PostgreSQL real-time backend database for booking and user management  
-- Workflow automation using Zapier to trigger SMS and call alerts  
-- Secure booking process supporting cash on delivery and mobile payment options (eSewa, Khalti planned)  
-- Worker onboarding with NGO partnerships for skill verification and training  
-- Admin dashboard for comprehensive platform management  
-- Rating and feedback system to ensure service quality  
+- AI-powered job matching with automated SMS and voice call alerts  
+- Responsive React frontend with clean, modern design built using Replit AI  
+- Real-time PostgreSQL backend using Supabase for bookings and user management  
+- Automation of notifications and workflows via Zapier integration  
+- Worker onboarding and verification through NGO partnerships  
+- Support for multiple payment methods (cash on delivery, mobile wallets planned)  
+- Rating and feedback system to ensure quality  
+- Admin dashboard for managing bookings, payments, and worker verification  
 
 ---
 
 ## Technology Stack  
-- Frontend: React.js (built with Replit AI assistance)  
-- Backend: Supabase (PostgreSQL) for real-time data management  
-- Automation: Zapier workflows for notification triggers  
-- Communication APIs: Twilio, Sparrow, or local SMS/voice services  
-- AI Components: Replica AI agents for automated calls and message handling  
+
+- **Frontend:** React.js (generated and enhanced with Replit AI)  
+- **Backend:** Supabase (PostgreSQL) for data storage and real-time updates  
+- **Automation:** Zapier for workflow automation and notifications  
+- **Communication:** Twilio, Sparrow, or local SMS/voice services for worker alerts  
+- **AI:** Replica AI agents for automated voice calls and interaction  
 
 ---
 
-## Project Setup Instructions
+## Setup Instructions  
 
-1. **Clone or Fork the Repository**  
-   Download the project files or fork the repository to your Replit workspace or local machine.
+To get the project running quickly, follow these steps:
 
-2. **Configure Supabase/PostgreSQL Database**  
-   - Create a free Supabase project and set up the PostgreSQL database.  
-   - Use the provided schema to create tables for bookings, users, and services.  
-   - Update your `.env` or config files with Supabase credentials (DATABASE_URL, API keys).
+1. **Fork the project on Replit AI**  
+   - Go to the project repository URL or the Replit link provided.  
+   - Click on “Fork” or “Remix” to create your own copy in Replit.  
 
-3. **Connect React Frontend**  
-   - Update your React app environment variables to connect to the Supabase database.  
-   - Deploy locally or use Vercel/Netlify for hosting.
+2. **Configure Environment Variables**  
+   - In Replit, open the **Secrets (Environment Variables)** section.  
+   - Add your Supabase database URL, API keys, and any SMS API credentials here.  
 
-4. **Set Up Zapier Automation**  
-   - Create a Zap that watches for new bookings in the Supabase database.  
-   - Configure Zapier to send SMS or voice call notifications via Twilio or Sparrow API.  
-   - Test workflows to ensure workers receive job alerts and clients get booking confirmations.
+3. **Run the Project**  
+   - Click the **Run** button in Replit to start the development server.  
+   - The React frontend will launch and connect automatically to the Supabase backend.
 
-5. **Integrate Payment Gateways (Optional for MVP)**  
-   - Setup eSewa or Khalti SDKs for secure digital payments.  
-   - Enable payment options in the booking flow.
+4. **Set up Zapier Automation**  
+   - Create a Zap to watch for new records in the Supabase “bookings” table.  
+   - Configure actions to send SMS or automated voice calls to workers using your chosen SMS provider API.  
 
-6. **Worker Onboarding & Verification**  
-   - Coordinate with local NGOs or INGOs to onboard workers.  
-   - Upload verified skill credentials to the platform linked to worker profiles.
-
-7. **Run & Test**  
-   - Test full workflow: client books → AI matches → notification sent → worker accepts → booking confirmed.
+5. **Test the Workflow**  
+   - Open the website, select location and services, and place a booking.  
+   - Confirm that workers receive notifications and that booking status updates accordingly.  
 
 ---
 
 ## How It Works  
-- Clients select location and service on the website.  
-- The system auto-assigns the job to the closest qualified worker.  
-- Worker gets notified via SMS or AI-powered voice call and can accept or decline with simple responses.  
-- Admin monitors all activities and verifies workers.  
-- Payments are processed via mobile wallets or cash on delivery.  
-- Ratings and feedback help maintain high service quality.
 
----
-
-## Societal Impact  
-Jaruri Xa empowers digitally marginalized workers by providing equal access to gig opportunities without requiring smartphones or internet. This drives local economic growth, formalizes informal jobs, and supports SDG #8: Decent Work and Economic Growth.
+- Users select location and service from the website.  
+- The system auto-assigns jobs to the nearest qualified workers.  
+- Workers receive SMS or AI-powered voice call alerts, allowing easy acceptance or rejection.  
+- Admin oversees verification and dispute resolution through the dashboard.  
+- Payment options include cash on delivery and mobile wallets (future integration).  
+- Ratings maintain service quality and accountability.
 
 ---
 
 ## Contact  
-For questions or collaboration:  
+
+For any queries or collaborations, contact:  
 **Vedansh Baranwal**  
-Email: vedanshbarnwal22@gmail.com
+Email: vedanshbarnwal22@gmail.com  
 
 ---
 
-Thank you for exploring **Jaruri Xa** — bridging opportunity and talent through AI and smart automation!
-
+Thank you for exploring **Jaruri Xa** — Making essential services accessible and empowering workers with AI-driven technology!
