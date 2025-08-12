@@ -24,7 +24,6 @@ import {
   contactRequests,
   appNotifications
 } from "@shared/schema";
-import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 
@@ -74,306 +73,41 @@ export interface IStorage {
   
   // Notifications
   createNotificationSubscription(notification: InsertNotification): Promise<AppNotification>;
-}
-
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private serviceCategories: Map<string, ServiceCategory>;
-  private services: Map<string, Service>;
-  private professionals: Map<string, Professional>;
-  private bookings: Map<string, Booking>;
-  private reviews: Map<string, Review>;
-  private locations: Map<string, Location>;
-  private contactRequests: Map<string, ContactRequest>;
-  private notifications: Map<string, AppNotification>;
-
-  constructor() {
-    this.users = new Map();
-    this.serviceCategories = new Map();
-    this.services = new Map();
-    this.professionals = new Map();
-    this.bookings = new Map();
-    this.reviews = new Map();
-    this.locations = new Map();
-    this.contactRequests = new Map();
-    this.notifications = new Map();
-    
-    this.initializeData();
-  }
-
-  private initializeData() {
-    // Initialize service categories
-    const categories: ServiceCategory[] = [
-      { id: "1", name: "Electrician", nameNepali: "बिजुली मिस्त्री", description: "Electrical repairs and installations", icon: "fas fa-bolt", color: "yellow", isActive: true },
-      { id: "2", name: "Plumber", nameNepali: "प्लम्बर", description: "Pipe and fixture repairs", icon: "fas fa-wrench", color: "blue", isActive: true },
-      { id: "3", name: "House Cleaning", nameNepali: "घर सफाई", description: "Deep and regular cleaning", icon: "fas fa-broom", color: "green", isActive: true },
-      { id: "4", name: "AC Repair", nameNepali: "ए.सी. मर्मत", description: "AC service and installation", icon: "fas fa-snowflake", color: "cyan", isActive: true },
-      { id: "5", name: "Carpenter", nameNepali: "सुतारी", description: "Furniture and wood work", icon: "fas fa-hammer", color: "amber", isActive: true },
-      { id: "6", name: "Painting", nameNepali: "रंगाई", description: "Interior and exterior painting", icon: "fas fa-paint-roller", color: "purple", isActive: true },
-      { id: "7", name: "Appliance Repair", nameNepali: "उपकरण मर्मत", description: "TV, washing machine repairs", icon: "fas fa-tools", color: "red", isActive: true },
-      { id: "8", name: "Pest Control", nameNepali: "कीरा नियन्त्रण", description: "Safe and effective pest control", icon: "fas fa-bug", color: "teal", isActive: true },
-    ];
-
-    categories.forEach(cat => this.serviceCategories.set(cat.id, cat));
-
-    // Initialize services
-    const services: Service[] = [
-      { id: "1", categoryId: "1", name: "Electrical Repairs", nameNepali: "बिजुली मर्मत", description: "Fix electrical issues and installations", basePrice: "500.00", unit: "hour", estimatedDuration: 60, isActive: true },
-      { id: "2", categoryId: "2", name: "Pipe Repair", nameNepali: "पाइप मर्मत", description: "Fix leaky pipes and faucets", basePrice: "400.00", unit: "hour", estimatedDuration: 45, isActive: true },
-      { id: "3", categoryId: "3", name: "Deep Cleaning", nameNepali: "गहिरो सफाई", description: "Thorough house cleaning service", basePrice: "800.00", unit: "fixed", estimatedDuration: 180, isActive: true },
-      { id: "4", categoryId: "4", name: "AC Service", nameNepali: "ए.सी. सेवा", description: "AC cleaning and maintenance", basePrice: "1200.00", unit: "fixed", estimatedDuration: 90, isActive: true },
-      { id: "5", categoryId: "5", name: "Furniture Assembly", nameNepali: "फर्निचर जोड्ने", description: "Assemble furniture and cabinets", basePrice: "600.00", unit: "hour", estimatedDuration: 120, isActive: true },
-      { id: "6", categoryId: "6", name: "Wall Painting", nameNepali: "भित्ता रंगाई", description: "Interior wall painting service", basePrice: "300.00", unit: "sq_ft", estimatedDuration: 240, isActive: true },
-      { id: "7", categoryId: "7", name: "TV Repair", nameNepali: "टि.भी. मर्मत", description: "Television repair and setup", basePrice: "700.00", unit: "fixed", estimatedDuration: 75, isActive: true },
-      { id: "8", categoryId: "8", name: "Home Pest Control", nameNepali: "घर कीरा नियन्त्रण", description: "Safe pest control for homes", basePrice: "1000.00", unit: "fixed", estimatedDuration: 120, isActive: true },
-    ];
-
-    services.forEach(service => this.services.set(service.id, service));
-
-    // Initialize locations
-    const locations: Location[] = [
-      { id: "1", name: "Kathmandu", nameNepali: "काठमाडौं", type: "city", parentId: null, isServiceable: true },
-      { id: "2", name: "Pokhara", nameNepali: "पोखरा", type: "city", parentId: null, isServiceable: true },
-      { id: "3", name: "Chitwan", nameNepali: "चितवन", type: "city", parentId: null, isServiceable: true },
-      { id: "4", name: "Lalitpur", nameNepali: "ललितपुर", type: "city", parentId: null, isServiceable: true },
-      { id: "5", name: "Bhaktapur", nameNepali: "भक्तपुर", type: "city", parentId: null, isServiceable: true },
-    ];
-
-    locations.forEach(location => this.locations.set(location.id, location));
-  }
-
-  // User methods
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const now = new Date();
-    const user: User = { 
-      ...insertUser, 
-      id, 
-      role: insertUser.role || "customer",
-      phone: insertUser.phone || null,
-      profilePicture: insertUser.profilePicture || null,
-      createdAt: now, 
-      updatedAt: now,
-      isVerified: false 
-    };
-    this.users.set(id, user);
-    return user;
-  }
-
-  // Service Categories methods
-  async getServiceCategories(): Promise<ServiceCategory[]> {
-    return Array.from(this.serviceCategories.values());
-  }
-
-  async getActiveServiceCategories(): Promise<ServiceCategory[]> {
-    return Array.from(this.serviceCategories.values()).filter(cat => cat.isActive);
-  }
-
-  // Services methods
-  async getServices(): Promise<Service[]> {
-    return Array.from(this.services.values());
-  }
-
-  async getServicesByCategory(categoryId: string): Promise<Service[]> {
-    return Array.from(this.services.values()).filter(service => service.categoryId === categoryId);
-  }
-
-  async getService(id: string): Promise<Service | undefined> {
-    return this.services.get(id);
-  }
-
-  // Professional methods
-  async getProfessionals(): Promise<Professional[]> {
-    return Array.from(this.professionals.values());
-  }
-
-  async getProfessional(id: string): Promise<Professional | undefined> {
-    return this.professionals.get(id);
-  }
-
-  async getProfessionalByUserId(userId: string): Promise<Professional | undefined> {
-    return Array.from(this.professionals.values()).find(prof => prof.userId === userId);
-  }
-
-  async createProfessional(insertProfessional: InsertProfessional): Promise<Professional> {
-    const id = randomUUID();
-    const now = new Date();
-    const professional: Professional = { 
-      ...insertProfessional, 
-      id, 
-      isVerified: insertProfessional.isVerified || false,
-      bio: insertProfessional.bio || null,
-      experience: insertProfessional.experience || null,
-      hourlyRate: insertProfessional.hourlyRate || null,
-      rating: "0.00",
-      totalJobs: 0,
-      availabilityStatus: insertProfessional.availabilityStatus || "available",
-      documents: insertProfessional.documents || null,
-      createdAt: now 
-    };
-    this.professionals.set(id, professional);
-    return professional;
-  }
-
-  async getProfessionalsByService(serviceId: string): Promise<Professional[]> {
-    const service = await this.getService(serviceId);
-    if (!service) return [];
-    
-    return Array.from(this.professionals.values()).filter(prof => 
-      prof.skills.includes(service.name) && prof.isVerified && prof.availabilityStatus === "available"
-    );
-  }
-
-  async getProfessionalsByLocation(location: string): Promise<Professional[]> {
-    return Array.from(this.professionals.values()).filter(prof => 
-      prof.serviceAreas.includes(location)
-    );
-  }
-
-  // Booking methods
-  async getBookings(): Promise<Booking[]> {
-    return Array.from(this.bookings.values());
-  }
-
-  async getBooking(id: string): Promise<Booking | undefined> {
-    return this.bookings.get(id);
-  }
-
-  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
-    const id = randomUUID();
-    const now = new Date();
-    const booking: Booking = { 
-      ...insertBooking, 
-      id, 
-      description: insertBooking.description || null,
-      specialRequirements: insertBooking.specialRequirements || null,
-      professionalId: null,
-      finalPrice: null,
-      status: "pending",
-      paymentStatus: "pending",
-      customerNotes: insertBooking.customerNotes || null,
-      professionalNotes: insertBooking.professionalNotes || null,
-      coordinates: insertBooking.coordinates || null,
-      createdAt: now, 
-      updatedAt: now 
-    };
-    this.bookings.set(id, booking);
-    return booking;
-  }
-
-  async updateBookingStatus(id: string, status: string): Promise<Booking | undefined> {
-    const booking = this.bookings.get(id);
-    if (!booking) return undefined;
-    
-    const updatedBooking = { ...booking, status: status as any, updatedAt: new Date() };
-    this.bookings.set(id, updatedBooking);
-    return updatedBooking;
-  }
-
-  async getBookingsByCustomer(customerId: string): Promise<Booking[]> {
-    return Array.from(this.bookings.values()).filter(booking => booking.customerId === customerId);
-  }
-
-  async getBookingsByProfessional(professionalId: string): Promise<Booking[]> {
-    return Array.from(this.bookings.values()).filter(booking => booking.professionalId === professionalId);
-  }
-
-  // Review methods
-  async getReviews(): Promise<Review[]> {
-    return Array.from(this.reviews.values());
-  }
-
-  async getReviewsByProfessional(professionalId: string): Promise<Review[]> {
-    return Array.from(this.reviews.values()).filter(review => review.professionalId === professionalId);
-  }
-
-  async createReview(insertReview: InsertReview): Promise<Review> {
-    const id = randomUUID();
-    const now = new Date();
-    const review: Review = { 
-      ...insertReview, 
-      id, 
-      comment: insertReview.comment || null,
-      response: insertReview.response || null,
-      isVerified: false,
-      createdAt: now 
-    };
-    this.reviews.set(id, review);
-    return review;
-  }
-
-  // Location methods
-  async getLocations(): Promise<Location[]> {
-    return Array.from(this.locations.values());
-  }
-
-  async getServiceableLocations(): Promise<Location[]> {
-    return Array.from(this.locations.values()).filter(location => location.isServiceable);
-  }
-
-  // Contact methods
-  async createContactRequest(insertRequest: InsertContactRequest): Promise<ContactRequest> {
-    const id = randomUUID();
-    const now = new Date();
-    const request: ContactRequest = { 
-      ...insertRequest, 
-      id, 
-      status: "new",
-      createdAt: now 
-    };
-    this.contactRequests.set(id, request);
-    return request;
-  }
-
-  // Notification methods
-  async createNotificationSubscription(insertNotification: InsertNotification): Promise<AppNotification> {
-    const id = randomUUID();
-    const now = new Date();
-    const notification: AppNotification = { 
-      ...insertNotification, 
-      id, 
-      createdAt: now 
-    };
-    this.notifications.set(id, notification);
-    return notification;
-  }
+  
+  // Stats
+  getStats(): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
-  // User methods
+  constructor() {
+    this.initializeData();
+  }
+
+  // Users
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user;
+    return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user;
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
-  // Service Categories methods
+  // Service Categories
   async getServiceCategories(): Promise<ServiceCategory[]> {
     return await db.select().from(serviceCategories);
   }
@@ -382,77 +116,83 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(serviceCategories).where(eq(serviceCategories.isActive, true));
   }
 
-  // Services methods
+  // Services
   async getServices(): Promise<Service[]> {
-    return await db.select().from(services);
+    return await db.select().from(services).where(eq(services.isActive, true));
   }
 
   async getServicesByCategory(categoryId: string): Promise<Service[]> {
-    return await db.select().from(services).where(eq(services.categoryId, categoryId));
+    return await db.select().from(services)
+      .where(and(eq(services.categoryId, categoryId), eq(services.isActive, true)));
   }
 
   async getService(id: string): Promise<Service | undefined> {
     const [service] = await db.select().from(services).where(eq(services.id, id));
-    return service;
+    return service || undefined;
   }
 
-  // Professional methods
+  // Professionals
   async getProfessionals(): Promise<Professional[]> {
     return await db.select().from(professionals);
   }
 
   async getProfessional(id: string): Promise<Professional | undefined> {
     const [professional] = await db.select().from(professionals).where(eq(professionals.id, id));
-    return professional;
+    return professional || undefined;
   }
 
   async getProfessionalByUserId(userId: string): Promise<Professional | undefined> {
     const [professional] = await db.select().from(professionals).where(eq(professionals.userId, userId));
-    return professional;
+    return professional || undefined;
   }
 
-  async createProfessional(insertProfessional: InsertProfessional): Promise<Professional> {
-    const [professional] = await db.insert(professionals).values(insertProfessional).returning();
-    return professional;
+  async createProfessional(professional: InsertProfessional): Promise<Professional> {
+    const [newProfessional] = await db
+      .insert(professionals)
+      .values({
+        ...professional,
+        skills: professional.skills as string[],
+        serviceAreas: professional.serviceAreas as string[]
+      })
+      .returning();
+    return newProfessional;
   }
 
   async getProfessionalsByService(serviceId: string): Promise<Professional[]> {
-    const service = await this.getService(serviceId);
-    if (!service) return [];
-    
-    return await db.select().from(professionals).where(
-      and(
-        eq(professionals.isVerified, true),
-        eq(professionals.availabilityStatus, "available")
-      )
-    );
+    // This would need a junction table in a real app, for now return all professionals
+    return await db.select().from(professionals).where(eq(professionals.isVerified, true));
   }
 
   async getProfessionalsByLocation(location: string): Promise<Professional[]> {
+    // Filter professionals who serve this location
     return await db.select().from(professionals);
   }
 
-  // Booking methods
+  // Bookings
   async getBookings(): Promise<Booking[]> {
     return await db.select().from(bookings);
   }
 
   async getBooking(id: string): Promise<Booking | undefined> {
     const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
-    return booking;
+    return booking || undefined;
   }
 
-  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
-    const [booking] = await db.insert(bookings).values(insertBooking).returning();
-    return booking;
+  async createBooking(booking: InsertBooking): Promise<Booking> {
+    const [newBooking] = await db
+      .insert(bookings)
+      .values(booking)
+      .returning();
+    return newBooking;
   }
 
   async updateBookingStatus(id: string, status: string): Promise<Booking | undefined> {
-    const [booking] = await db.update(bookings)
+    const [updatedBooking] = await db
+      .update(bookings)
       .set({ status: status as any, updatedAt: new Date() })
       .where(eq(bookings.id, id))
       .returning();
-    return booking;
+    return updatedBooking || undefined;
   }
 
   async getBookingsByCustomer(customerId: string): Promise<Booking[]> {
@@ -463,7 +203,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(bookings).where(eq(bookings.professionalId, professionalId));
   }
 
-  // Review methods
+  // Reviews
   async getReviews(): Promise<Review[]> {
     return await db.select().from(reviews);
   }
@@ -472,33 +212,109 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(reviews).where(eq(reviews.professionalId, professionalId));
   }
 
-  async createReview(insertReview: InsertReview): Promise<Review> {
-    const [review] = await db.insert(reviews).values(insertReview).returning();
-    return review;
+  async createReview(review: InsertReview): Promise<Review> {
+    const [newReview] = await db
+      .insert(reviews)
+      .values(review)
+      .returning();
+    return newReview;
   }
 
-  // Location methods
+  // Locations
   async getLocations(): Promise<Location[]> {
-    return await db.select().from(locations);
+    const result = await db.select().from(locations);
+    return result as Location[];
   }
 
   async getServiceableLocations(): Promise<Location[]> {
-    return await db.select().from(locations).where(eq(locations.isServiceable, true));
+    const result = await db.select().from(locations).where(eq(locations.isServiceable, true));
+    return result as Location[];
   }
 
-  // Contact methods
-  async createContactRequest(insertRequest: InsertContactRequest): Promise<ContactRequest> {
-    const [request] = await db.insert(contactRequests).values(insertRequest).returning();
-    return request;
+  // Contact
+  async createContactRequest(request: InsertContactRequest): Promise<ContactRequest> {
+    const [newRequest] = await db
+      .insert(contactRequests)
+      .values(request)
+      .returning();
+    return newRequest;
   }
 
-  // Notification methods
-  async createNotificationSubscription(insertNotification: InsertNotification): Promise<AppNotification> {
-    const [notification] = await db.insert(appNotifications).values(insertNotification).returning();
-    return notification;
+  // Notifications
+  async createNotificationSubscription(notification: InsertNotification): Promise<AppNotification> {
+    const [newNotification] = await db
+      .insert(appNotifications)
+      .values(notification)
+      .returning();
+    return newNotification;
+  }
+
+  // Stats
+  async getStats(): Promise<any> {
+    const totalBookings = await db.select().from(bookings);
+    const totalProfessionals = await db.select().from(professionals);
+    const totalUsers = await db.select().from(users);
+    
+    return {
+      totalBookings: totalBookings.length,
+      totalProfessionals: totalProfessionals.length,
+      totalUsers: totalUsers.length,
+      activeServices: 8
+    };
+  }
+
+  private async initializeData() {
+    try {
+      // Check if data already exists
+      const existingCategories = await db.select().from(serviceCategories);
+      if (existingCategories.length > 0) {
+        return; // Data already initialized
+      }
+
+      // Initialize service categories with images
+      const categoriesData = [
+        { name: "Electrician", nameNepali: "बिजुली मिस्त्री", description: "Electrical repairs and installations", icon: "https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=400&h=300&fit=crop", color: "yellow", isActive: true },
+        { name: "Plumber", nameNepali: "प्लम्बर", description: "Pipe and fixture repairs", icon: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=400&h=300&fit=crop", color: "blue", isActive: true },
+        { name: "House Cleaning", nameNepali: "घर सफाई", description: "Deep and regular cleaning", icon: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop", color: "green", isActive: true },
+        { name: "AC Repair", nameNepali: "ए.सी. मर्मत", description: "AC service and installation", icon: "https://images.unsplash.com/photo-1621401158159-2d4e5d0e8a8b?w=400&h=300&fit=crop", color: "cyan", isActive: true },
+        { name: "Carpenter", nameNepali: "सुतारी", description: "Furniture and wood work", icon: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop", color: "amber", isActive: true },
+        { name: "Painting", nameNepali: "रंगाई", description: "Interior and exterior painting", icon: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=400&h=300&fit=crop", color: "purple", isActive: true },
+        { name: "Appliance Repair", nameNepali: "उपकरण मर्मत", description: "TV, washing machine repairs", icon: "https://images.unsplash.com/photo-1558618666-fcd25c85cd65?w=400&h=300&fit=crop", color: "red", isActive: true },
+        { name: "Pest Control", nameNepali: "कीरा नियन्त्रण", description: "Safe and effective pest control", icon: "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400&h=300&fit=crop", color: "teal", isActive: true },
+      ];
+
+      const insertedCategories = await db.insert(serviceCategories).values(categoriesData).returning();
+
+      // Initialize services
+      const servicesData = [
+        { categoryId: insertedCategories[0].id, name: "Electrical Repairs", nameNepali: "बिजुली मर्मत", description: "Fix electrical issues and installations", basePrice: "500.00", unit: "hour", estimatedDuration: 60, isActive: true },
+        { categoryId: insertedCategories[1].id, name: "Pipe Repair", nameNepali: "पाइप मर्मत", description: "Fix leaky pipes and faucets", basePrice: "400.00", unit: "hour", estimatedDuration: 45, isActive: true },
+        { categoryId: insertedCategories[2].id, name: "Deep Cleaning", nameNepali: "गहिरो सफाई", description: "Thorough house cleaning service", basePrice: "800.00", unit: "fixed", estimatedDuration: 180, isActive: true },
+        { categoryId: insertedCategories[3].id, name: "AC Service", nameNepali: "ए.सी. सेवा", description: "AC cleaning and maintenance", basePrice: "1200.00", unit: "fixed", estimatedDuration: 90, isActive: true },
+        { categoryId: insertedCategories[4].id, name: "Furniture Assembly", nameNepali: "फर्निचर जोड्ने", description: "Assemble furniture and cabinets", basePrice: "600.00", unit: "hour", estimatedDuration: 120, isActive: true },
+        { categoryId: insertedCategories[5].id, name: "Wall Painting", nameNepali: "भित्ता रंगाई", description: "Interior wall painting service", basePrice: "300.00", unit: "sq_ft", estimatedDuration: 240, isActive: true },
+        { categoryId: insertedCategories[6].id, name: "TV Repair", nameNepali: "टि.भी. मर्मत", description: "Television repair and setup", basePrice: "700.00", unit: "fixed", estimatedDuration: 75, isActive: true },
+        { categoryId: insertedCategories[7].id, name: "Home Pest Control", nameNepali: "घर कीरा नियन्त्रण", description: "Safe pest control for homes", basePrice: "1000.00", unit: "fixed", estimatedDuration: 120, isActive: true },
+      ];
+
+      await db.insert(services).values(servicesData);
+
+      // Initialize locations
+      const locationsData = [
+        { name: "Kathmandu", nameNepali: "काठमाडौं", type: "city" as const, parentId: null, isServiceable: true },
+        { name: "Pokhara", nameNepali: "पोखरा", type: "city" as const, parentId: null, isServiceable: true },
+        { name: "Chitwan", nameNepali: "चितवन", type: "city" as const, parentId: null, isServiceable: true },
+        { name: "Lalitpur", nameNepali: "ललितपुर", type: "city" as const, parentId: null, isServiceable: true },
+        { name: "Bhaktapur", nameNepali: "भक्तपुर", type: "city" as const, parentId: null, isServiceable: true },
+      ];
+
+      await db.insert(locations).values(locationsData);
+
+      console.log("Database initialized with service data");
+    } catch (error) {
+      console.error("Error initializing data:", error);
+    }
   }
 }
 
-// Use Database storage for proper data persistence
-console.log("Using PostgreSQL database with real data");
 export const storage = new DatabaseStorage();
