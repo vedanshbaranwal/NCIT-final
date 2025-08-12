@@ -22,7 +22,8 @@ Key Features:
 - Supports local economies by empowering marginalized gig workers.
 <img width="351" height="445" alt="image" src="https://github.com/user-attachments/assets/9c9d0ec1-b4ca-48ad-a848-a1b39c287d75" />
 <img width="351" height="445" alt="image" src="https://github.com/user-attachments/assets/ee8e27a4-1bb9-4894-a0ae-43cd71e14128"/>
-<img width="351" height="445" alt="image" src="https://github.com/user-attachments/assets/4ec564df-fd20-406e-bbb4-591ad257503"/>
+<img width="351" height="445" alt="image" src="https://github.com/user-attachments/assets/4c8b193c-c5b9-4f70-a6d2-9082cdad3284"/>
+
 
 Technology Stack:
 -----------------
