@@ -21,8 +21,8 @@ Key Features:
 - Real-time booking confirmation and seamless client-worker communication.
 - Supports local economies by empowering marginalized gig workers.
 <img width="351" height="445" alt="image" src="https://github.com/user-attachments/assets/9c9d0ec1-b4ca-48ad-a848-a1b39c287d75" />
-![WhatsApp-Image-2025-08-01-at-12 53 50_b4455f6b](https://github.com/user-attachments/assets/ee8e27a4-1bb9-4894-a0ae-43cd71e14128)
-![WhatsApp-Image-2025-08-01-at-12 55 12_0770adf1](https://github.com/user-attachments/assets/4ec564df-fd20-406e-bbb4-591ad2575034)
+<img width="351" height="445" alt="image" src="https://github.com/user-attachments/assets/ee8e27a4-1bb9-4894-a0ae-43cd71e14128"/>
+<img width="351" height="445" alt="image" src="https://github.com/user-attachments/assets/4ec564df-fd20-406e-bbb4-591ad257503"/>
 
 Technology Stack:
 -----------------
