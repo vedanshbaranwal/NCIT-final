@@ -271,16 +271,16 @@ export class DatabaseStorage implements IStorage {
         return; // Data already initialized
       }
 
-      // Initialize service categories with images
+      // Initialize service categories with Nepal-context images
       const categoriesData = [
-        { name: "Electrician", nameNepali: "बिजुली मिस्त्री", description: "Electrical repairs and installations", icon: "https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=400&h=300&fit=crop", color: "yellow", isActive: true },
-        { name: "Plumber", nameNepali: "प्लम्बर", description: "Pipe and fixture repairs", icon: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=400&h=300&fit=crop", color: "blue", isActive: true },
-        { name: "House Cleaning", nameNepali: "घर सफाई", description: "Deep and regular cleaning", icon: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop", color: "green", isActive: true },
-        { name: "AC Repair", nameNepali: "ए.सी. मर्मत", description: "AC service and installation", icon: "https://images.unsplash.com/photo-1621401158159-2d4e5d0e8a8b?w=400&h=300&fit=crop", color: "cyan", isActive: true },
-        { name: "Carpenter", nameNepali: "सुतारी", description: "Furniture and wood work", icon: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop", color: "amber", isActive: true },
-        { name: "Painting", nameNepali: "रंगाई", description: "Interior and exterior painting", icon: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=400&h=300&fit=crop", color: "purple", isActive: true },
-        { name: "Appliance Repair", nameNepali: "उपकरण मर्मत", description: "TV, washing machine repairs", icon: "https://images.unsplash.com/photo-1558618666-fcd25c85cd65?w=400&h=300&fit=crop", color: "red", isActive: true },
-        { name: "Pest Control", nameNepali: "कीरा नियन्त्रण", description: "Safe and effective pest control", icon: "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400&h=300&fit=crop", color: "teal", isActive: true },
+        { name: "Electrician", nameNepali: "बिजुली मिस्त्री", description: "Electrical repairs and installations", icon: "https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", color: "yellow", isActive: true },
+        { name: "Plumber", nameNepali: "प्लम्बर", description: "Pipe and fixture repairs", icon: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", color: "blue", isActive: true },
+        { name: "House Cleaning", nameNepali: "घर सफाई", description: "Deep and regular cleaning", icon: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", color: "green", isActive: true },
+        { name: "AC Repair", nameNepali: "ए.सी. मर्मत", description: "AC service and installation", icon: "https://images.unsplash.com/photo-1604709177225-055f99402ea3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", color: "cyan", isActive: true },
+        { name: "Carpenter", nameNepali: "सुतारी", description: "Furniture and wood work", icon: "https://images.unsplash.com/photo-1504148455328-c376907d081c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", color: "amber", isActive: true },
+        { name: "Painting", nameNepali: "रंगाई", description: "Interior and exterior painting", icon: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", color: "purple", isActive: true },
+        { name: "Appliance Repair", nameNepali: "उपकरण मर्मत", description: "TV, washing machine repairs", icon: "https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", color: "red", isActive: true },
+        { name: "Pest Control", nameNepali: "कीरा नियन्त्रण", description: "Safe and effective pest control", icon: "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", color: "teal", isActive: true },
       ];
 
       const insertedCategories = await db.insert(serviceCategories).values(categoriesData).returning();
