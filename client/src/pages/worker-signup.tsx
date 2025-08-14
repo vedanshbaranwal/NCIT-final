@@ -78,6 +78,7 @@ export default function WorkerSignup() {
   const [, setLocation] = useLocation();
   const [step, setStep] = useState(1);
   const [userFormData, setUserFormData] = useState<UserFormData | null>(null);
+  const [createdUserId, setCreatedUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const userForm = useForm<UserFormData>({
@@ -131,6 +132,7 @@ export default function WorkerSignup() {
       const { confirmPassword, ...userData } = data;
       const response = await createUserMutation.mutateAsync(userData);
       setUserFormData(data);
+      setCreatedUserId(response.id); // Store the actual user ID
       setStep(2);
       toast({
         title: "Step 1 Complete",
@@ -146,14 +148,12 @@ export default function WorkerSignup() {
   };
 
   const onProfessionalSubmit = async (data: ProfessionalFormData) => {
-    if (!userFormData) return;
+    if (!userFormData || !createdUserId) return;
     
-    // Mock user ID for demo - in real app this would come from the user creation response
-    const userId = "demo-user-id";
     const { terms, ...professionalData } = data;
     
     createProfessionalMutation.mutate({
-      userId,
+      userId: createdUserId, // Use the actual user ID from step 1
       professionalData,
     });
   };
